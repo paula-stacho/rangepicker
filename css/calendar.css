@@ -18,6 +18,21 @@
   text-align: center;
   cursor: pointer;
 }
+.rp-content .rp-day.rp-interval-start,
+.rp-content .rp-day.rp-interval-end,
+.rp-content .rp-day.rp-interval-oneday {
+  background-color: #357ebd;
+  color: #ffffff;
+}
+.rp-content .rp-day.rp-interval-start {
+  border-radius: 4px 0 0 4px;
+}
+.rp-content .rp-day.rp-interval-end {
+  border-radius: 0 4px 4px 0;
+}
+.rp-content .rp-day.rp-interval-oneday {
+  border-radius: 4px 4px 4px 4px;
+}
 .clickable {
   cursor: pointer;
 }

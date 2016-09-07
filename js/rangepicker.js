@@ -24,18 +24,20 @@ $(function(){
         }, options);
 
         var status = {
-            lastMonthDisplayed: moment(options.lastMonthDisplayed)
+            lastMonthDisplayed: moment(options.lastMonthDisplayed),
+            clickedDates: [],
+            intervalStart: null,
+            intervalEnd: null,
+            mirrorIntervalStart: null,
+            mirrorIntervalEnd: null
         };
 
         var header, prev, next, headerText, content, months;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-
-        console.log('options', options);
-
         function createCalendarStructure() {
-            prev = $('<span class="rp-prev"> < </span>');
-            next = $('<span class="rp-next"> > </span>');
+            prev = $('<span class="rp-prev"> < </span>').addClass('clickable');
+            next = $('<span class="rp-next"> > </span>').addClass('clickable');
             months = $('<span class="rp-months"></span>');
             content = $('<div class="rp-content"></div>');
 
@@ -71,7 +73,8 @@ $(function(){
                         } else {
                             date++;
                         }
-                        week.push(`<td class="rp-day rp-month-${monthNum} rp-date-${date}">${date}</td>`);
+                        let dateFormatted = firstDay.format('YYYY-MM') + '-' + ((date > 9) ? date : ('0' + date));
+                        week.push(`<td class="rp-day rp-month-${monthNum} rp-date-${date}" data-date="${dateFormatted}">${date}</td>`);
                     }
                 }
 
@@ -123,13 +126,18 @@ $(function(){
         function addBindings() {
             next.click(moveForward);
             prev.click(moveBack);
+
+            $('.rp-day').click(calculateInterval);
         }
 
         function moveForward() {
             status.lastMonthDisplayed.add('month', 1);
-            
+
             removeMonth('start');
             addMonth(status.lastMonthDisplayed.format('YYYY MM'), 'end');
+
+            $('.rp-day').unbind('click');
+            $('.rp-day').click(calculateInterval);
         }
 
         function moveBack() {
@@ -138,6 +146,61 @@ $(function(){
 
             removeMonth('end');
             addMonth(firstMonthDisplayed.format('YYYY MM'), 'start');
+
+            $('.rp-day').unbind('click');
+            $('.rp-day').click(calculateInterval);
+        }
+
+        function calculateInterval(event) {
+            var resetStates = function() {
+                $('.rp-interval-start').removeClass('rp-interval-start');
+                $('.rp-interval-end').removeClass('rp-interval-end');
+                $('.rp-interval-oneday').removeClass('rp-interval-oneday');
+            };
+
+            var dateClicked = event.target.dataset.date;
+            var thisClick;
+            
+            if (!status.clickedDates.length) {
+                thisClick = 'oneDay';
+                status.clickedDates.push(dateClicked);
+            } else {
+                if (dateClicked === status.clickedDates[status.clickedDates.length - 1]) {
+                    thisClick = 'oneDay';
+                } else if (dateClicked < status.clickedDates[status.clickedDates.length - 1]) {
+                    thisClick = 'start';
+                } else {
+                    thisClick = 'end';
+                }
+                status.clickedDates.push(dateClicked);
+                if (status.clickedDates.length > 2){
+                    status.clickedDates.shift();
+                }
+            }
+
+            switch (thisClick) {
+                case 'oneDay':
+                    resetStates();
+                    $(event.target).addClass('rp-interval-oneday');
+
+                    status.intervalStart = dateClicked;
+                    status.intervalEnd = dateClicked;
+                    break;
+                case 'start':
+                    resetStates();
+                    $(`.rp-day[data-date="${status.clickedDates[0]}"]`).addClass('rp-interval-end');
+                    $(event.target).addClass('rp-interval-start');
+
+                    status.intervalStart = dateClicked;
+                    break;
+                case 'end':
+                    resetStates();
+                    $(`.rp-day[data-date="${status.clickedDates[0]}"]`).addClass('rp-interval-start');
+                    $(event.target).addClass('rp-interval-end');
+
+                    status.intervalEnd = dateClicked;
+                    break;
+            }
         }
 
 
@@ -152,7 +215,6 @@ $(function(){
         addBindings();
 
         //////////////// TODO:
-        function calculateInterval(event) {}
         function calculateMirror() {}
         function highlightSelection() {}
     };
