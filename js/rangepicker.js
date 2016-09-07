@@ -3,21 +3,6 @@
 
 'use strict';
 
-// $.widget('rangepicker', $.ui.datepicker, {
-//     _create: function() {
-//         console.log('creating');
-//     }
-// });
-
-// $.widget('ui.rangepicker', {
-//     _init: function() {
-//         var $el = this.element;
-//         $el.datepicker(this.options);
-//
-//
-//     }
-// });
-
 $(function(){
 
     $.fn.rangepicker = function(options) {
@@ -29,6 +14,7 @@ $(function(){
             datemax: '31 Dec 2050',
             mirror: true,
             months: 3,
+            lastMonthDisplayed: undefined,
             onChange: function(){},
             onHide: function(){},
             onShow: function(){},
@@ -37,8 +23,13 @@ $(function(){
 
         }, options);
 
+        var status = {
+            lastMonthDisplayed: moment(options.lastMonthDisplayed)
+        };
+
         var header, prev, next, headerText, content, months;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
 
         console.log('options', options);
 
@@ -93,7 +84,7 @@ $(function(){
 
         function addMonth(month, position) {
             var monthName = moment(month + ' 01').format('MMMM YYYY');
-            var monthNameContainer = $(`<span class="rp-month">${monthName}</span>`);
+            var monthNameContainer = $(`<span class="rp-month-name">${monthName}</span>`);
 
             // add names of days
             var weekHeader = daysOfWeek.map((day) => {
@@ -121,19 +112,48 @@ $(function(){
             }
         }
 
+        function removeMonth(position) {
+            if (position === 'start') {
+                months.find('.rp-month:first-child').remove();
+            } else {
+                months.find('.rp-month:last-child').remove();
+            }
+        }
 
+        function addBindings() {
+            next.click(moveForward);
+            prev.click(moveBack);
+        }
+
+        function moveForward() {
+            status.lastMonthDisplayed.add('month', 1);
+            
+            removeMonth('start');
+            addMonth(status.lastMonthDisplayed.format('YYYY MM'), 'end');
+        }
+
+        function moveBack() {
+            status.lastMonthDisplayed.subtract('month', 1);
+            var firstMonthDisplayed = status.lastMonthDisplayed.clone().subtract('months', (options.months -1));
+
+            removeMonth('end');
+            addMonth(firstMonthDisplayed.format('YYYY MM'), 'start');
+        }
+
+
+        ///////////////// create basic structure and add some months
         createCalendarStructure();
-        var date = moment();
+        var date = status.lastMonthDisplayed.clone();
         for (var i=0; i < options.months; i++) {
             addMonth(date.format('YYYY MM'), 'start');
             date.subtract('month', 1);
         }
+        //////////////// add bindings
+        addBindings();
 
-        // TODO:
+        //////////////// TODO:
         function calculateInterval(event) {}
         function calculateMirror() {}
-        function moveForward() {}
-        function moveBack() {}
         function highlightSelection() {}
     };
 
