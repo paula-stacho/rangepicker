@@ -12,7 +12,7 @@ $(function(){
             mirror: true,
             months: 3,
             lastMonthDisplayed: undefined,
-            defaultStart: moment().subtract('days', 7).format('YYYY-MM-DD'),
+            defaultStart: moment().subtract('days', 6).format('YYYY-MM-DD'),
             defaultEnd: moment().format('YYYY-MM-DD'),
             onChange: function(){},
             onHide: function(){},
@@ -48,10 +48,29 @@ $(function(){
                 .append(months)
                 .append(next);
 
-            self
-                .addClass('rangepicker')
-                .append(header)
-                .append(content);
+            if (self.is('input[type="text"]')){
+                let startFormatted = moment(options.defaultStart).format('MMM D, YYYY');
+                let endFormatted = moment(options.defaultEnd).format('MMM D, YYYY');
+
+                self
+                    .addClass('rangepicker')
+                    .attr('readonly', true)
+                    .val(startFormatted + ' - ' + endFormatted)
+                    .after(content);
+
+                content
+                    .addClass('rp-popup')
+                    .hide();
+                self.click(() => {
+                    content.toggle();
+                });
+
+                // TODO: add a dropdown icon?
+            } else {
+                self
+                    .addClass('rangepicker')
+                    .append(content);
+            }
 
             // TODO: add some inputs on the right
         }
@@ -285,7 +304,6 @@ $(function(){
         function calculateCompareMirror() {} // this also needs to be visible on calendar
         function calculateCompareLastYear() {} // this won't be shown on calendar
         function calculateCompareCustom() {} // this needs to be able to override calculateInterval on click events
-        // TODO: bind rangepicker to an input field and make it a popup
         // TODO: custom date ranges
     };
 
