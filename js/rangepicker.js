@@ -1,6 +1,3 @@
-/**
- */
-
 'use strict';
 
 $(function(){
@@ -35,6 +32,9 @@ $(function(){
         var header, prev, next, headerText, content, months;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
+        /**
+         * Create basic DOM structure
+         */
         function createCalendarStructure() {
             prev = $('<span class="rp-prev"> < </span>').addClass('clickable');
             next = $('<span class="rp-next"> > </span>').addClass('clickable');
@@ -52,6 +52,21 @@ $(function(){
                 .append(content);
         }
 
+        /**
+         * Add event bindings
+         */
+        function addBindings() {
+            next.click(moveForward);
+            prev.click(moveBack);
+
+            $('.rp-day').click(calculateInterval);
+        }
+
+        /**
+         * Calculate week days of the month
+         * @param month
+         * @returns {Array}
+         */
         function prepareWeeks(month) {
             var weeks = [];
             var firstDay = moment(month + ' 01');
@@ -85,6 +100,11 @@ $(function(){
             return weeks;
         }
 
+        /**
+         * Add month view to calendar
+         * @param month
+         * @param position
+         */
         function addMonth(month, position) {
             var monthName = moment(month + ' 01').format('MMMM YYYY');
             var monthNameContainer = $(`<span class="rp-month-name">${monthName}</span>`);
@@ -115,6 +135,10 @@ $(function(){
             }
         }
 
+        /**
+         * Remove month from the calendar
+         * @param position
+         */
         function removeMonth(position) {
             if (position === 'start') {
                 months.find('.rp-month:first-child').remove();
@@ -123,23 +147,31 @@ $(function(){
             }
         }
 
-        function addBindings() {
-            next.click(moveForward);
-            prev.click(moveBack);
-
+        /**
+         * Updates needed after view has been shifted
+         */
+        function updateDatesAfterCalendarShift() {
+            $('.rp-day').unbind('click');
             $('.rp-day').click(calculateInterval);
+
+            // TODO: display selection if it was out of sight
         }
 
+        /**
+         * +1 month
+         */
         function moveForward() {
             status.lastMonthDisplayed.add('month', 1);
 
             removeMonth('start');
             addMonth(status.lastMonthDisplayed.format('YYYY MM'), 'end');
 
-            $('.rp-day').unbind('click');
-            $('.rp-day').click(calculateInterval);
+            updateDatesAfterCalendarShift();
         }
 
+        /**
+         * -1 month
+         */
         function moveBack() {
             status.lastMonthDisplayed.subtract('month', 1);
             var firstMonthDisplayed = status.lastMonthDisplayed.clone().subtract('months', (options.months -1));
@@ -147,10 +179,13 @@ $(function(){
             removeMonth('end');
             addMonth(firstMonthDisplayed.format('YYYY MM'), 'start');
 
-            $('.rp-day').unbind('click');
-            $('.rp-day').click(calculateInterval);
+            updateDatesAfterCalendarShift();
         }
 
+        /**
+         * Decide which range was selected
+         * @param event
+         */
         function calculateInterval(event) {
             var resetStates = function() {
                 $('.rp-interval-start').removeClass('rp-interval-start');
@@ -160,7 +195,7 @@ $(function(){
 
             var dateClicked = event.target.dataset.date;
             var thisClick;
-            
+
             if (!status.clickedDates.length) {
                 thisClick = 'oneDay';
                 status.clickedDates.push(dateClicked);
@@ -201,17 +236,19 @@ $(function(){
                     status.intervalEnd = dateClicked;
                     break;
             }
+
+            calculateMirror();
+            highlightSelection();
         }
 
 
-        ///////////////// create basic structure and add some months
+        //////////////////// INITIATE //////////////////////
         createCalendarStructure();
         var date = status.lastMonthDisplayed.clone();
         for (var i=0; i < options.months; i++) {
             addMonth(date.format('YYYY MM'), 'start');
             date.subtract('month', 1);
         }
-        //////////////// add bindings
         addBindings();
 
         //////////////// TODO:
