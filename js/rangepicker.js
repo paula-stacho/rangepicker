@@ -7,11 +7,13 @@ $(function(){
         var self = this;
         var options = $.extend({
 
-            datemin: '1 Jan 1995',
-            datemax: '31 Dec 2050',
+            datemin: '1995-01-01',
+            datemax: '2050-12-01',
             mirror: true,
             months: 3,
             lastMonthDisplayed: undefined,
+            defaultStart: moment().subtract('days', 7).format('YYYY-MM-DD'),
+            defaultEnd: moment().format('YYYY-MM-DD'),
             onChange: function(){},
             onHide: function(){},
             onShow: function(){},
@@ -23,13 +25,13 @@ $(function(){
         var status = {
             lastMonthDisplayed: moment(options.lastMonthDisplayed),
             clickedDates: [],
-            intervalStart: null,
-            intervalEnd: null,
+            intervalStart: options.defaultStart || null,
+            intervalEnd: options.defaultEnd || null,
             mirrorIntervalStart: null,
             mirrorIntervalEnd: null
         };
 
-        var header, prev, next, headerText, content, months;
+        var prev, next, content, months;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
         /**
@@ -163,7 +165,6 @@ $(function(){
          * Highlight everything between interval start & end
          */
         function highlightSelection() {
-            console.log('highlighting ..', status.intervalStart, status.intervalEnd);
             $('.rp-selected-normal').removeClass('rp-selected-normal');
             $('.rp-day')
                 .filter(function(){
@@ -259,6 +260,16 @@ $(function(){
             highlightSelection();
         }
 
+        /**
+         * Highlight start, end and selection
+         */
+        function highlightInit() {
+            $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
+            $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
+
+            highlightSelection();
+        }
+
 
         //////////////////// INITIATE //////////////////////
         createCalendarStructure();
@@ -268,6 +279,7 @@ $(function(){
             date.subtract('month', 1);
         }
         addBindings();
+        highlightInit();
 
         //////////////// TODO:
         function calculateCompareMirror() {} // this also needs to be visible on calendar
