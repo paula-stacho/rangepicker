@@ -33,6 +33,9 @@
 .rp-content .rp-day.rp-interval-oneday {
   border-radius: 4px 4px 4px 4px;
 }
+.rp-content .rp-day.rp-selected-normal {
+  background-color: #ebf4f8;
+}
 .clickable {
   cursor: pointer;
 }

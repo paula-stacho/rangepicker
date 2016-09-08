@@ -160,6 +160,20 @@ $(function(){
         }
 
         /**
+         * Highlight everything between interval start & end
+         */
+        function highlightSelection() {
+            console.log('highlighting ..', status.intervalStart, status.intervalEnd);
+            $('.rp-selected-normal').removeClass('rp-selected-normal');
+            $('.rp-day')
+                .filter(function(){
+                    var insideInterval = ((this.dataset.date > status.intervalStart) && (this.dataset.date < status.intervalEnd));
+                    return insideInterval;
+                })
+                .addClass('rp-selected-normal');
+        }
+
+        /**
          * +1 month
          */
         function moveForward() {
@@ -229,6 +243,7 @@ $(function(){
                     $(event.target).addClass('rp-interval-start');
 
                     status.intervalStart = dateClicked;
+                    status.intervalEnd = status.clickedDates[0];
                     break;
                 case 'end':
                     resetStates();
@@ -236,10 +251,11 @@ $(function(){
                     $(event.target).addClass('rp-interval-end');
 
                     status.intervalEnd = dateClicked;
+                    status.intervalStart = status.clickedDates[0];
                     break;
             }
 
-            calculateCompareMirror();
+            calculateCompareMirror(); // or something else
             highlightSelection();
         }
 
@@ -257,7 +273,6 @@ $(function(){
         function calculateCompareMirror() {} // this also needs to be visible on calendar
         function calculateCompareLastYear() {} // this won't be shown on calendar
         function calculateCompareCustom() {} // this needs to be able to override calculateInterval on click events
-        function highlightSelection() {}
         // TODO: bind rangepicker to an input field and make it a popup
         // TODO: custom date ranges
     };
