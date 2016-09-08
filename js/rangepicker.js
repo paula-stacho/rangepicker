@@ -27,8 +27,8 @@ $(function(){
             clickedDates: [],
             intervalStart: options.defaultStart || null,
             intervalEnd: options.defaultEnd || null,
-            mirrorIntervalStart: null,
-            mirrorIntervalEnd: null
+            compareIntervalStart: null,
+            compareIntervalEnd: null
         };
 
         var prev, next, content, months;
@@ -277,6 +277,7 @@ $(function(){
 
             calculateCompareMirror(); // or something else
             highlightSelection();
+            intervalChanged();
         }
 
         /**
@@ -287,6 +288,25 @@ $(function(){
             $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
 
             highlightSelection();
+        }
+
+        /**
+         * Callback whenever interval or compare interval changed
+         */
+        function intervalChanged() {
+            let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
+            let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
+
+            if (self.is('input')){
+                self.val(startFormatted + ' - ' + endFormatted);
+            }
+
+            options.onChange({
+                intervalStart: status.intervalStart,
+                intervalEnd: status.intervalEnd,
+                compareIntervalStart: status.compareIntervalStart,
+                compareIntervalEnd: status.compareIntervalEnd
+            });
         }
 
 
