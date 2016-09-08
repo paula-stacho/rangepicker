@@ -17,7 +17,6 @@ $(function(){
             onChange: function(){},
             onHide: function(){},
             onShow: function(){},
-            onBeforeMonthChange: function(){},
             onMonthChange: function(){}
 
         }, options);
@@ -48,7 +47,7 @@ $(function(){
                 .append(months)
                 .append(next);
 
-            if (self.is('input[type="text"]')){
+            if (self.is('input[type="text"]')){ // BIND TO INPUT AS POPUP
                 let startFormatted = moment(options.defaultStart).format('MMM D, YYYY');
                 let endFormatted = moment(options.defaultEnd).format('MMM D, YYYY');
 
@@ -63,10 +62,15 @@ $(function(){
                     .hide();
                 self.click(() => {
                     content.toggle();
+                    if (content.is(':visible')){
+                        options.onShow();
+                    } else {
+                        options.onHide();
+                    }
                 });
 
                 // TODO: add a dropdown icon?
-            } else {
+            } else { // INSERT INTO ELEMENT
                 self
                     .addClass('rangepicker')
                     .append(content);
@@ -203,6 +207,7 @@ $(function(){
             addMonth(status.lastMonthDisplayed.format('YYYY MM'), 'end');
 
             updateDatesAfterCalendarShift();
+            options.onMonthChange();
         }
 
         /**
@@ -216,6 +221,7 @@ $(function(){
             addMonth(firstMonthDisplayed.format('YYYY MM'), 'start');
 
             updateDatesAfterCalendarShift();
+            options.onMonthChange();
         }
 
         /**
