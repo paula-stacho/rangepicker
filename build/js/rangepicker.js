@@ -2,9 +2,9 @@
 
 import { stuff } from 'things';
 
-$(function(){
+$(function () {
 
-    $.fn.rangepicker = function(options) {
+    $.fn.rangepicker = function (options) {
 
         var self = this;
         options = $.extend({
@@ -16,10 +16,10 @@ $(function(){
             lastMonthDisplayed: undefined,
             defaultStart: moment().subtract('days', 6).format('YYYY-MM-DD'),
             defaultEnd: moment().format('YYYY-MM-DD'),
-            onChange: function(){},
-            onHide: function(){},
-            onShow: function(){},
-            onMonthChange: function(){}
+            onChange: function () {},
+            onHide: function () {},
+            onShow: function () {},
+            onMonthChange: function () {}
 
         }, options);
 
@@ -47,27 +47,19 @@ $(function(){
             months = $('<span class="rp-months"></span>');
             content = $('<div class="rp-content"></div>');
 
-            content
-                .append(prev)
-                .append(months)
-                .append(next);
+            content.append(prev).append(months).append(next);
 
-            if (self.is('input[type="text"]')){ // BIND TO INPUT AS POPUP
+            if (self.is('input[type="text"]')) {
+                // BIND TO INPUT AS POPUP
                 let startFormatted = moment(options.defaultStart).format('MMM D, YYYY');
                 let endFormatted = moment(options.defaultEnd).format('MMM D, YYYY');
 
-                self
-                    .addClass('rangepicker')
-                    .attr('readonly', true)
-                    .val(startFormatted + ' - ' + endFormatted)
-                    .after(content);
+                self.addClass('rangepicker').attr('readonly', true).val(startFormatted + ' - ' + endFormatted).after(content);
 
-                content
-                    .addClass('rp-popup')
-                    .hide();
+                content.addClass('rp-popup').hide();
                 self.click(() => {
                     content.toggle();
-                    if (content.is(':visible')){
+                    if (content.is(':visible')) {
                         options.onShow();
                     } else {
                         options.onHide();
@@ -75,10 +67,9 @@ $(function(){
                 });
 
                 // TODO: add a dropdown icon?
-            } else { // INSERT INTO ELEMENT
-                self
-                    .addClass('rangepicker')
-                    .append(content);
+            } else {
+                // INSERT INTO ELEMENT
+                self.addClass('rangepicker').append(content);
             }
 
             makeForm();
@@ -87,36 +78,15 @@ $(function(){
         function makeForm() {
             var content = $('.rp-content');
             var form = $('<div class="rp-form"></div>');
-            var dateRanges =
-                $('<div>' +
-                    '<select class="daterange-preset">' +
-                    '<option value="custom">Custom</option>' +
-                    '<option value="lastdays">Last Day(s)</option>' +
-                    '</select>' +
-                '</div>');
-            var dateFrom =
-                $('<div class="date-input">' +
-                    '<label for="rane-start">From</label>' +
-                    '<input class="input-mini" type="date" name="range-start" value="">' +
-                '</div>');
-            var dateTo =
-                $('<div class="date-input">' +
-                    '<label for="range-to">To</label>' +
-                    '<input class="input-mini" type="date" name="range-to" value="">' +
-                '</div>');
+            var dateRanges = $('<div>' + '<select class="daterange-preset">' + '<option value="custom">Custom</option>' + '<option value="lastdays">Last Day(s)</option>' + '</select>' + '</div>');
+            var dateFrom = $('<div class="date-input">' + '<label for="rane-start">From</label>' + '<input class="input-mini" type="date" name="range-start" value="">' + '</div>');
+            var dateTo = $('<div class="date-input">' + '<label for="range-to">To</label>' + '<input class="input-mini" type="date" name="range-to" value="">' + '</div>');
 
-            var applyBtn =
-                $('<button class="applyBtn btn btn-small btn-sm btn-success">Apply</button>');
+            var applyBtn = $('<button class="applyBtn btn btn-small btn-sm btn-success">Apply</button>');
 
-            var cancelBtn =
-                $('<button class="cancelBtn btn btn-small btn-sm btn-default">Cancel</button>');
+            var cancelBtn = $('<button class="cancelBtn btn btn-small btn-sm btn-default">Cancel</button>');
 
-            form
-                .append(dateRanges)
-                .append(dateFrom)
-                .append(dateTo)
-                .append(applyBtn)
-                .append(cancelBtn);
+            form.append(dateRanges).append(dateFrom).append(dateTo).append(applyBtn).append(cancelBtn);
 
             content.append(form);
         }
@@ -143,22 +113,26 @@ $(function(){
             var monthNum = firstDay.format('MM');
             var date;
 
-            for (let i = 0; i < 6; i++) { // six weeks
+            for (let i = 0; i < 6; i++) {
+                // six weeks
                 let week = [];
 
-                for (let j = 0; j < 7; j++){ // seven days
-                    if ((i === 0) && (j < firstDay.day())){ // blank slots at the beginning
+                for (let j = 0; j < 7; j++) {
+                    // seven days
+                    if (i === 0 && j < firstDay.day()) {
+                        // blank slots at the beginning
                         week.push('<td></td>');
-                    } else if (date && ((date + 1) > lastDay.date())) { // and at the end
+                    } else if (date && date + 1 > lastDay.date()) {
+                        // and at the end
                         week.push('<td></td>');
                     } else {
-                        if (!date){
+                        if (!date) {
                             date = 1;
                         } else {
                             date++;
                         }
-                        let dateFormatted = firstDay.format('YYYY-MM') + '-' + ((date > 9) ? date : ('0' + date));
-                        week.push(`<td class="rp-day rp-month-${monthNum} rp-date-${date}" data-date="${dateFormatted}">${date}</td>`);
+                        let dateFormatted = firstDay.format('YYYY-MM') + '-' + (date > 9 ? date : '0' + date);
+                        week.push(`<td class="rp-day rp-month-${ monthNum } rp-date-${ date }" data-date="${ dateFormatted }">${ date }</td>`);
                     }
                 }
 
@@ -176,11 +150,11 @@ $(function(){
          */
         function addMonth(month, position) {
             var monthName = moment(month + ' 01').format('MMMM YYYY');
-            var monthNameContainer = $(`<span class="rp-month-name">${monthName}</span>`);
+            var monthNameContainer = $(`<span class="rp-month-name">${ monthName }</span>`);
 
             // add names of days
-            var weekHeader = daysOfWeek.map((day) => {
-               return `<th class="rp-day-name">${day}</th>`;
+            var weekHeader = daysOfWeek.map(day => {
+                return `<th class="rp-day-name">${ day }</th>`;
             }).join();
             var weekHeaderRow = '<tr>' + weekHeader + '</tr>';
             // add days
@@ -197,7 +171,7 @@ $(function(){
             monthContainer.append(monthNameContainer);
             monthContainer.append(table);
 
-            if (position === 'start'){
+            if (position === 'start') {
                 months.prepend(monthContainer);
             } else {
                 months.append(monthContainer);
@@ -231,12 +205,10 @@ $(function(){
          */
         function highlightSelection() {
             $('.rp-selected-normal').removeClass('rp-selected-normal');
-            $('.rp-day')
-                .filter(function(){
-                    var insideInterval = ((this.dataset.date > status.intervalStart) && (this.dataset.date < status.intervalEnd));
-                    return insideInterval;
-                })
-                .addClass('rp-selected-normal');
+            $('.rp-day').filter(function () {
+                var insideInterval = this.dataset.date > status.intervalStart && this.dataset.date < status.intervalEnd;
+                return insideInterval;
+            }).addClass('rp-selected-normal');
         }
 
         /**
@@ -257,7 +229,7 @@ $(function(){
          */
         function moveBack() {
             status.lastMonthDisplayed.subtract('month', 1);
-            var firstMonthDisplayed = status.lastMonthDisplayed.clone().subtract('months', (options.months -1));
+            var firstMonthDisplayed = status.lastMonthDisplayed.clone().subtract('months', options.months - 1);
 
             removeMonth('end');
             addMonth(firstMonthDisplayed.format('YYYY MM'), 'start');
@@ -271,7 +243,7 @@ $(function(){
          * @param event
          */
         function calculateInterval(event) {
-            var resetStates = function() {
+            var resetStates = function () {
                 $('.rp-interval-start').removeClass('rp-interval-start');
                 $('.rp-interval-end').removeClass('rp-interval-end');
                 $('.rp-interval-oneday').removeClass('rp-interval-oneday');
@@ -292,7 +264,7 @@ $(function(){
                     thisClick = 'end';
                 }
                 status.clickedDates.push(dateClicked);
-                if (status.clickedDates.length > 2){
+                if (status.clickedDates.length > 2) {
                     status.clickedDates.shift();
                 }
             }
@@ -307,7 +279,7 @@ $(function(){
                     break;
                 case 'start':
                     resetStates();
-                    $(`.rp-day[data-date="${status.clickedDates[0]}"]`).addClass('rp-interval-end');
+                    $(`.rp-day[data-date="${ status.clickedDates[0] }"]`).addClass('rp-interval-end');
                     $(event.target).addClass('rp-interval-start');
 
                     status.intervalStart = dateClicked;
@@ -315,7 +287,7 @@ $(function(){
                     break;
                 case 'end':
                     resetStates();
-                    $(`.rp-day[data-date="${status.clickedDates[0]}"]`).addClass('rp-interval-start');
+                    $(`.rp-day[data-date="${ status.clickedDates[0] }"]`).addClass('rp-interval-start');
                     $(event.target).addClass('rp-interval-end');
 
                     status.intervalEnd = dateClicked;
@@ -332,8 +304,8 @@ $(function(){
          * Highlight start, end and selection
          */
         function highlightInit() {
-            $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
-            $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
+            $(`.rp-day[data-date="${ status.intervalStart }"]`).addClass('rp-interval-start');
+            $(`.rp-day[data-date="${ status.intervalEnd }"]`).addClass('rp-interval-end');
 
             highlightSelection();
         }
@@ -345,7 +317,7 @@ $(function(){
             let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
             let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
 
-            if (self.is('input')){
+            if (self.is('input')) {
                 self.val(startFormatted + ' - ' + endFormatted);
             }
 
@@ -357,11 +329,10 @@ $(function(){
             });
         }
 
-
         //////////////////// INITIATE //////////////////////
         createCalendarStructure();
         var date = status.lastMonthDisplayed.clone();
-        for (var i=0; i < options.months; i++) {
+        for (var i = 0; i < options.months; i++) {
             addMonth(date.format('YYYY MM'), 'start');
             date.subtract('month', 1);
         }
@@ -374,5 +345,4 @@ $(function(){
         function calculateCompareCustom() {} // this needs to be able to override calculateInterval on click events
         // TODO: custom date ranges
     };
-
 }());
