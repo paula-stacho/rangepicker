@@ -51,7 +51,44 @@ $(function(){
                 .append(header)
                 .append(content);
 
-            // TODO: add some inputs on the right
+            makeForm();
+        }
+
+        function makeForm() {
+            var content = $('.rp-content');
+            var form = $('<div class="rp-form"></div>');
+            var dateRanges =
+                $('<div>' +
+                    '<select class="daterange-preset">' +
+                    '<option value="custom">Custom</option>' +
+                    '<option value="lastdays">Last Day(s)</option>' +
+                    '</select>' +
+                '</div>');
+            var dateFrom =
+                $('<div class="date-input">' +
+                    '<label for="rane-start">From</label>' +
+                    '<input class="input-mini" type="date" name="range-start" value="">' +
+                '</div>');
+            var dateTo =
+                $('<div class="date-input">' +
+                    '<label for="range-to">To</label>' +
+                    '<input class="input-mini" type="date" name="range-to" value="">' +
+                '</div>');
+
+            var applyBtn =
+                $('<button class="applyBtn btn btn-small btn-sm btn-success">Apply</button>');
+
+            var cancelBtn =
+                $('<button class="cancelBtn btn btn-small btn-sm btn-default">Cancel</button>');
+
+            form
+                .append(dateRanges)
+                .append(dateFrom)
+                .append(dateTo)
+                .append(applyBtn)
+                .append(cancelBtn);
+
+            content.append(form);
         }
 
         /**
