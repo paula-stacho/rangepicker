@@ -23,7 +23,7 @@ $(function(){
 
         var status = {
             lastMonthDisplayed: moment(options.lastMonthDisplayed),
-            clickedDates: [],
+            lastSelected: '',
             intervalStart: options.defaultStart || null,
             intervalEnd: options.defaultEnd || null,
             compareIntervalStart: null,
@@ -236,49 +236,25 @@ $(function(){
             };
 
             var dateClicked = event.target.dataset.date;
-            var thisClick;
 
-            if (!status.clickedDates.length) {
-                thisClick = 'oneDay';
-                status.clickedDates.push(dateClicked);
+            if (!status.lastSelected || status.lastSelected === 'second'){ // selected first date
+                resetStates();
+                status.intervalStart = dateClicked;
+                status.intervalEnd = dateClicked;
+                status.lastSelected = 'first';
+                $(event.target).addClass('rp-interval-oneday');
             } else {
-                if (dateClicked === status.clickedDates[status.clickedDates.length - 1]) {
-                    thisClick = 'oneDay';
-                } else if (dateClicked < status.clickedDates[status.clickedDates.length - 1]) {
-                    thisClick = 'start';
-                } else {
-                    thisClick = 'end';
-                }
-                status.clickedDates.push(dateClicked);
-                if (status.clickedDates.length > 2){
-                    status.clickedDates.shift();
-                }
-            }
-
-            switch (thisClick) {
-                case 'oneDay':
-                    resetStates();
-                    $(event.target).addClass('rp-interval-oneday');
-
-                    status.intervalStart = dateClicked;
+                resetStates();
+                if (status.intervalStart < dateClicked){ // selected newer date as second
                     status.intervalEnd = dateClicked;
-                    break;
-                case 'start':
-                    resetStates();
-                    $(`.rp-day[data-date="${status.clickedDates[0]}"]`).addClass('rp-interval-end');
-                    $(event.target).addClass('rp-interval-start');
-
-                    status.intervalStart = dateClicked;
-                    status.intervalEnd = status.clickedDates[0];
-                    break;
-                case 'end':
-                    resetStates();
-                    $(`.rp-day[data-date="${status.clickedDates[0]}"]`).addClass('rp-interval-start');
+                    $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
                     $(event.target).addClass('rp-interval-end');
-
-                    status.intervalEnd = dateClicked;
-                    status.intervalStart = status.clickedDates[0];
-                    break;
+                } else { // selected older date as second
+                    status.intervalStart = dateClicked;
+                    $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
+                    $(event.target).addClass('rp-interval-start');
+                }
+                status.lastSelected = 'second';
             }
 
             calculateCompareMirror(); // or something else
