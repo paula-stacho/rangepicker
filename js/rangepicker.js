@@ -7,15 +7,16 @@ $(function(){
         var self = this;
         var options = $.extend({
 
-            datemin: '1 Jan 1995',
-            datemax: '31 Dec 2050',
+            datemin: '1995-01-01',
+            datemax: '2050-12-01',
             mirror: true,
             months: 3,
             lastMonthDisplayed: undefined,
+            defaultStart: moment().subtract('days', 6).format('YYYY-MM-DD'),
+            defaultEnd: moment().format('YYYY-MM-DD'),
             onChange: function(){},
             onHide: function(){},
             onShow: function(){},
-            onBeforeMonthChange: function(){},
             onMonthChange: function(){}
 
         }, options);
@@ -23,13 +24,13 @@ $(function(){
         var status = {
             lastMonthDisplayed: moment(options.lastMonthDisplayed),
             clickedDates: [],
-            intervalStart: null,
-            intervalEnd: null,
-            mirrorIntervalStart: null,
-            mirrorIntervalEnd: null
+            intervalStart: options.defaultStart || null,
+            intervalEnd: options.defaultEnd || null,
+            compareIntervalStart: null,
+            compareIntervalEnd: null
         };
 
-        var header, prev, next, headerText, content, months;
+        var prev, next, content, months;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
         /**
@@ -46,10 +47,34 @@ $(function(){
                 .append(months)
                 .append(next);
 
-            self
-                .addClass('rangepicker')
-                .append(header)
-                .append(content);
+            if (self.is('input[type="text"]')){ // BIND TO INPUT AS POPUP
+                let startFormatted = moment(options.defaultStart).format('MMM D, YYYY');
+                let endFormatted = moment(options.defaultEnd).format('MMM D, YYYY');
+
+                self
+                    .addClass('rangepicker')
+                    .attr('readonly', true)
+                    .val(startFormatted + ' - ' + endFormatted)
+                    .after(content);
+
+                content
+                    .addClass('rp-popup')
+                    .hide();
+                self.click(() => {
+                    content.toggle();
+                    if (content.is(':visible')){
+                        options.onShow();
+                    } else {
+                        options.onHide();
+                    }
+                });
+
+                // TODO: add a dropdown icon?
+            } else { // INSERT INTO ELEMENT
+                self
+                    .addClass('rangepicker')
+                    .append(content);
+            }
 
             makeForm();
         }
@@ -197,6 +222,19 @@ $(function(){
         }
 
         /**
+         * Highlight everything between interval start & end
+         */
+        function highlightSelection() {
+            $('.rp-selected-normal').removeClass('rp-selected-normal');
+            $('.rp-day')
+                .filter(function(){
+                    var insideInterval = ((this.dataset.date > status.intervalStart) && (this.dataset.date < status.intervalEnd));
+                    return insideInterval;
+                })
+                .addClass('rp-selected-normal');
+        }
+
+        /**
          * +1 month
          */
         function moveForward() {
@@ -206,6 +244,7 @@ $(function(){
             addMonth(status.lastMonthDisplayed.format('YYYY MM'), 'end');
 
             updateDatesAfterCalendarShift();
+            options.onMonthChange();
         }
 
         /**
@@ -219,6 +258,7 @@ $(function(){
             addMonth(firstMonthDisplayed.format('YYYY MM'), 'start');
 
             updateDatesAfterCalendarShift();
+            options.onMonthChange();
         }
 
         /**
@@ -266,6 +306,7 @@ $(function(){
                     $(event.target).addClass('rp-interval-start');
 
                     status.intervalStart = dateClicked;
+                    status.intervalEnd = status.clickedDates[0];
                     break;
                 case 'end':
                     resetStates();
@@ -273,11 +314,42 @@ $(function(){
                     $(event.target).addClass('rp-interval-end');
 
                     status.intervalEnd = dateClicked;
+                    status.intervalStart = status.clickedDates[0];
                     break;
             }
 
-            calculateCompareMirror();
+            calculateCompareMirror(); // or something else
             highlightSelection();
+            intervalChanged();
+        }
+
+        /**
+         * Highlight start, end and selection
+         */
+        function highlightInit() {
+            $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
+            $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
+
+            highlightSelection();
+        }
+
+        /**
+         * Callback whenever interval or compare interval changed
+         */
+        function intervalChanged() {
+            let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
+            let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
+
+            if (self.is('input')){
+                self.val(startFormatted + ' - ' + endFormatted);
+            }
+
+            options.onChange({
+                intervalStart: status.intervalStart,
+                intervalEnd: status.intervalEnd,
+                compareIntervalStart: status.compareIntervalStart,
+                compareIntervalEnd: status.compareIntervalEnd
+            });
         }
 
 
@@ -289,13 +361,12 @@ $(function(){
             date.subtract('month', 1);
         }
         addBindings();
+        highlightInit();
 
         //////////////// TODO:
         function calculateCompareMirror() {} // this also needs to be visible on calendar
         function calculateCompareLastYear() {} // this won't be shown on calendar
         function calculateCompareCustom() {} // this needs to be able to override calculateInterval on click events
-        function highlightSelection() {}
-        // TODO: bind rangepicker to an input field and make it a popup
         // TODO: custom date ranges
     };
 

@@ -3,6 +3,11 @@
   display: inline-block;
   padding: 0 1em;
 }
+.rp-content.rp-popup {
+  position: absolute;
+  top: 3em;
+  left: 0;
+}
 .rp-content .rp-month {
   display: inline-block;
   margin: 0.5em 1em;
@@ -32,6 +37,9 @@
 }
 .rp-content .rp-day.rp-interval-oneday {
   border-radius: 4px 4px 4px 4px;
+}
+.rp-content .rp-day.rp-selected-normal {
+  background-color: #ebf4f8;
 }
 .clickable {
   cursor: pointer;
