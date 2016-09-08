@@ -50,6 +50,8 @@ $(function(){
                 .addClass('rangepicker')
                 .append(header)
                 .append(content);
+
+            // TODO: add some inputs on the right
         }
 
         /**
@@ -237,7 +239,7 @@ $(function(){
                     break;
             }
 
-            calculateMirror();
+            calculateCompareMirror();
             highlightSelection();
         }
 
@@ -252,8 +254,12 @@ $(function(){
         addBindings();
 
         //////////////// TODO:
-        function calculateMirror() {}
+        function calculateCompareMirror() {} // this also needs to be visible on calendar
+        function calculateCompareLastYear() {} // this won't be shown on calendar
+        function calculateCompareCustom() {} // this needs to be able to override calculateInterval on click events
         function highlightSelection() {}
+        // TODO: bind rangepicker to an input field and make it a popup
+        // TODO: custom date ranges
     };
 
 }());
