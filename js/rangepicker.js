@@ -1,8 +1,8 @@
 'use strict';
 
 
-import $ from 'jquery';
-import jqueryui from 'jquery-ui';
+//import $ from 'jquery';
+//import jqueryui from 'jquery-ui';
 import moment from 'moment';
 
 (function($){
@@ -36,6 +36,7 @@ import moment from 'moment';
         };
 
         var prev, next, content, months;
+        var dateFrom, dateTo;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
         /**
@@ -86,6 +87,9 @@ import moment from 'moment';
             makeForm();
         }
 
+        /**
+         * Create form on the side
+         */
         function makeForm() {
             var content = $('.rp-content');
             var form = $('<div class="rp-form"></div>');
@@ -99,35 +103,39 @@ import moment from 'moment';
                 list = list + `<option value="${next[0]}">${next[1]}</option>`;
                 return list;
             }, '');
+
+            let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
+            let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
             var dateRanges =
-                $('<div>' +
-                    '<select class="rp-daterange-preset">' +
-                        dateRangesOptions +
-                    '</select>' +
-                '</div>');
-            var dateFrom =
-                $('<div class="date-input">' +
-                    '<label for="rane-start">From</label>' +
-                    '<input class="input-mini" type="date" name="range-start" value="">' +
-                '</div>');
-            var dateTo =
-                $('<div class="date-input">' +
-                    '<label for="range-to">To</label>' +
-                    '<input class="input-mini" type="date" name="range-to" value="">' +
+                $(`<div>
+                    <select class="rp-daterange-preset">
+                        ${dateRangesOptions}
+                    </select>
+                </div>`);
+            dateFrom =
+                $('<div class="rp-date-input">' +
+                    `<input class="rp-input-mini" type="date" name="range-start" value="${startFormatted}">` +
+                '</div> - ');
+            dateTo =
+                $('<div class="rp-date-input">' +
+                    `<input class="rp-input-mini" type="date" name="range-end" value="${endFormatted}">` +
                 '</div>');
 
+            var controls = $('<div>');
             var applyBtn =
-                $('<button class="applyBtn btn btn-small btn-sm btn-success">Apply</button>');
-
+                $('<button class="rp-btn rp-applyBtn">Apply</button>');
             var cancelBtn =
-                $('<button class="cancelBtn btn btn-small btn-sm btn-default">Cancel</button>');
+                $('<button class="rp-btn rp-cancelBtn">Cancel</button>');
+            controls
+                .append(applyBtn)
+                .append(cancelBtn);
+
 
             form
                 .append(dateRanges)
                 .append(dateFrom)
                 .append(dateTo)
-                .append(applyBtn)
-                .append(cancelBtn);
+                .append(controls);
 
             content.append(form);
         }
@@ -142,6 +150,7 @@ import moment from 'moment';
             $('.rp-day').click(calculateInterval);
 
             $('.rp-daterange-preset').change(useDefinedInterval);
+            $('.rp-date-input .rp-input-mini').change(changeInterval);
         }
 
         /**
@@ -364,6 +373,28 @@ import moment from 'moment';
         }
 
         /**
+         * Change interval based on input
+         * @param event
+         */
+        function changeInterval(event) {
+            resetStates();
+            var target = $(event.currentTarget);
+            if (target.attr('name') === 'range-start'){
+                status.intervalStart = moment(target.val()).format('YYYY-MM-DD');
+            } else if (target.attr('name') === 'range-end') {
+                status.intervalEnd = moment(target.val()).format('YYYY-MM-DD');
+            }
+            $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
+            $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
+
+            calculateCompareMirror();
+            highlightSelection();
+            intervalChanged();
+
+            // TODO: handle wrong input
+        }
+
+        /**
          * Highlight start, end and selection
          */
         function highlightInit() {
@@ -380,6 +411,8 @@ import moment from 'moment';
             let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
             let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
 
+            dateFrom.find('input').val(startFormatted);
+            dateTo.find('input').val(endFormatted);
             if (self.is('input')){
                 self.val(startFormatted + ' - ' + endFormatted);
             }

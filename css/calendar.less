@@ -1,51 +1,51 @@
 .rp-content {
-  border: 1px solid #ccc;
-  display: inline-block;
-  padding: 0 1em;
-  &.rp-popup {
-    position: absolute;
-    top: 3em;
-    left: 0;
-  }
-
-  .rp-month {
+    border: 1px solid #ccc;
     display: inline-block;
-    margin: 0.5em 1em;
+    padding: 0 1em;
+    &.rp-popup {
+        position: absolute;
+        top: 3em;
+        left: 0;
+    }
 
-    .rp-month-name {
-      font-weight: bold;
-      display: block;
-      text-align: center;
-      padding: 0.3em 0;
-    }
-  }
+    .rp-month {
+        display: inline-block;
+        margin: 0.5em 1em;
 
-  .rp-day {
-    padding: 0.1em;
-    text-align: center;
-    cursor: pointer;
+        .rp-month-name {
+            font-weight: bold;
+            display: block;
+            text-align: center;
+            padding: 0.3em 0;
+        }
+    }
 
-    &.rp-interval-start, &.rp-interval-end, &.rp-interval-oneday  {
-      background-color: #357ebd;
-      color: #ffffff;
+    .rp-day {
+        padding: 0.1em;
+        text-align: center;
+        cursor: pointer;
+
+        &.rp-interval-start, &.rp-interval-end, &.rp-interval-oneday  {
+            background-color: #357ebd;
+            color: #ffffff;
+        }
+        &.rp-interval-start {
+            border-radius: 4px 0 0 4px;
+        }
+        &.rp-interval-end {
+            border-radius: 0 4px 4px 0;
+        }
+        &.rp-interval-oneday {
+            border-radius: 4px 4px 4px 4px;
+        }
+        &.rp-selected-normal {
+            background-color: #ebf4f8;
+        }
     }
-    &.rp-interval-start {
-      border-radius: 4px 0 0 4px;
-    }
-    &.rp-interval-end {
-      border-radius: 0 4px 4px 0;
-    }
-    &.rp-interval-oneday {
-      border-radius: 4px 4px 4px 4px;
-    }
-    &.rp-selected-normal {
-      background-color: #ebf4f8;
-    }
-  }
 }
 
 .clickable {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .rp-form {
@@ -56,8 +56,14 @@
     }
     button {
         padding: 10px;
-        &:last-child {
-            float: right;
-        }
+    }
+    .rp-date-input {
+    display: inline-block;
+    }
+    .rp-input-mini {
+    width: 9em;
+    }
+    .rp-btn {
+    float: left;
     }
 }
