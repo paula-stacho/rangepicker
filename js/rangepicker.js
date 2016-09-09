@@ -1,7 +1,8 @@
 'use strict';
-
-import { stuff } from 'things';
-
+import $ from 'jquery';
+import jqueryui from 'jquery-ui';
+import moment from 'moment';
+global.$ = $;
 $(function(){
 
     $.fn.rangepicker = function(options) {
@@ -40,7 +41,6 @@ $(function(){
          */
         function createCalendarStructure() {
 
-            stuff();
 
             prev = $('<span class="rp-prev"> < </span>').addClass('clickable');
             next = $('<span class="rp-next"> > </span>').addClass('clickable');

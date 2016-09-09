@@ -7,23 +7,28 @@
     "example": "example"
   },
   "scripts": {
-    "clean": "rm -f ./build/{css/*,js/*}",
+    "clean": "rm -r build",
     "autoprefixer": "postcss -u autoprefixer -r build/css/*",
     "less": "lessc css/calendar.less build/css/calendar.css",
     "lint": "eslint js",
-    "serve": "browser-sync start --server --files \"build/css/*.css, build/js/*.js, example/*.html, !node_modules/**/*.html\"",
+    "serve": "browser-sync start --server --files \"build/css/*.css, build/js/*.js, example/*.html, !node_modules/**/*.html\" --startPath example/",
     "build:css": "npm run less && npm run autoprefixer",
-    "build:js": "npm run lint && babel js/rangepicker.js -d build",
     "build:all": "npm run build:css && npm run build:js",
+    "browserify": "browserify js/rangepicker.js -o build/",
     "watch:css": "onchange \"css/\" -- npm run build:css",
-    "watch:js": "onchange \"js\" -- npm run build:js",
     "watch:all": "npm-run-all -p serve watch:css watch:js",
-    "postinstall": "npm run build:all && npm run watch:all"
+    "postinstall": "npm run build:all && npm run watch:all",
+    "watch:js": "watchify js/*.js -o build/rangepicker.js -dv",
+    "watch": "npm run watch-css & npm run watch-js",
+    "build:js": "npm run lint && browserify js/*.js > build/rangepicker.js"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.6",
     "babel-cli": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babelify": "^7.3.0",
     "browser-sync": "^2.12.8",
+    "browserify": "^13.1.0",
     "eslint": "^2.10.2",
     "eslint-config-standard": "^5.3.1",
     "eslint-plugin-promise": "^1.3.0",
@@ -32,7 +37,8 @@
     "npm-run-all": "^2.1.1",
     "onchange": "^2.4.0",
     "postcss-cli": "^2.5.2",
-    "uglify-js": "^2.6.2"
+    "uglify-js": "^2.6.2",
+    "watchify": "^3.7.0"
   },
   "repository": {
     "type": "git",
@@ -45,9 +51,26 @@
   },
   "homepage": "https://github.com/orechova/rangepicker#readme",
   "babel": {
-    "presets": ["es2015"]
+    "presets": [
+      "es2015"
+    ]
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
   },
   "dependencies": {
-    "babel-preset-es2015": "^6.14.0"
+    "babel-preset-es2015": "^6.14.0",
+    "jquery": "^3.1.0",
+    "jquery-ui": "^1.12.0",
+    "moment": "^2.14.1"
   }
 }
