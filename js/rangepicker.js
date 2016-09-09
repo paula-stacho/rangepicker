@@ -87,11 +87,20 @@ import { stuff } from 'things';
         function makeForm() {
             var content = $('.rp-content');
             var form = $('<div class="rp-form"></div>');
+            var dateRangesOptions = [
+                [ 'custom', 'Custom' ],
+                [ 'today', 'Today' ],
+                [ 'yesterday', 'Yesterday' ],
+                [ 'last7Days', 'Last 7 days' ],
+                [ 'last30Days', 'Last 30 days' ]
+            ].reduce((list, next) => {
+                list = list + `<option value="${next[0]}">${next[1]}</option>`;
+                return list;
+            }, '');
             var dateRanges =
                 $('<div>' +
-                    '<select class="daterange-preset">' +
-                    '<option value="custom">Custom</option>' +
-                    '<option value="lastdays">Last Day(s)</option>' +
+                    '<select class="rp-daterange-preset">' +
+                        dateRangesOptions +
                     '</select>' +
                 '</div>');
             var dateFrom =
@@ -129,6 +138,8 @@ import { stuff } from 'things';
             prev.click(moveBack);
 
             $('.rp-day').click(calculateInterval);
+
+            $('.rp-daterange-preset').change(useDefinedInterval);
         }
 
         /**
@@ -267,26 +278,28 @@ import { stuff } from 'things';
         }
 
         /**
+         * Reset interval markers
+         */
+        function resetStates() {
+            $('.rp-interval-start').removeClass('rp-interval-start');
+            $('.rp-interval-end').removeClass('rp-interval-end');
+            $('.rp-interval-oneday').removeClass('rp-interval-oneday');
+        }
+
+        /**
          * Decide which range was selected
          * @param event
          */
         function calculateInterval(event) {
-            var resetStates = function() {
-                $('.rp-interval-start').removeClass('rp-interval-start');
-                $('.rp-interval-end').removeClass('rp-interval-end');
-                $('.rp-interval-oneday').removeClass('rp-interval-oneday');
-            };
-
+            resetStates();
             var dateClicked = event.target.dataset.date;
 
             if (!status.lastSelected || status.lastSelected === 'second'){ // selected first date
-                resetStates();
                 status.intervalStart = dateClicked;
                 status.intervalEnd = dateClicked;
                 status.lastSelected = 'first';
                 $(event.target).addClass('rp-interval-oneday');
             } else {
-                resetStates();
                 if (status.intervalStart < dateClicked){ // selected newer date as second
                     status.intervalEnd = dateClicked;
                     $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
@@ -300,6 +313,50 @@ import { stuff } from 'things';
             }
 
             calculateCompareMirror(); // or something else
+            highlightSelection();
+            intervalChanged();
+        }
+
+        /** 
+         * Set some of pre-defined time intervals
+         * @param event
+         */
+        function useDefinedInterval(event) {
+            console.log('event', event);
+            resetStates();
+            var interval = $(event.currentTarget).find('option:selected').val();
+
+            var start, end;
+            switch (interval) {
+                case 'today':
+                    let today = moment().format('YYYY-MM-DD');
+                    status.intervalStart = status.intervalEnd = today;
+                    $(`.rp-day[data-date="${today}"]`).addClass('rp-interval-oneday');
+                    break;
+                case 'yesterday':
+                    let yesterday = moment().subtract('day', 1).format('YYYY-MM-DD');
+                    status.intervalStart = status.intervalEnd = yesterday;
+                    $(`.rp-day[data-date="${yesterday}"]`).addClass('rp-interval-oneday');
+                    break;
+                case 'last7Days':
+                    start = moment().subtract('day', 7).format('YYYY-MM-DD');
+                    end = moment().subtract('day', 1).format('YYYY-MM-DD');
+                    status.intervalStart = start;
+                    status.intervalEnd = end;
+                    $(`.rp-day[data-date="${start}"]`).addClass('rp-interval-start');
+                    $(`.rp-day[data-date="${end}"]`).addClass('rp-interval-end');
+                    break;
+                case 'last30Days':
+                    start = moment().subtract('day', 30).format('YYYY-MM-DD');
+                    end = moment().subtract('day', 1).format('YYYY-MM-DD');
+                    status.intervalStart = start;
+                    status.intervalEnd = end;
+                    $(`.rp-day[data-date="${start}"]`).addClass('rp-interval-start');
+                    $(`.rp-day[data-date="${end}"]`).addClass('rp-interval-end');
+                    break;
+            }
+
+            calculateCompareMirror();
             highlightSelection();
             intervalChanged();
         }
