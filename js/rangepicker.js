@@ -2,7 +2,7 @@
 
 import { stuff } from 'things';
 
-$(function(){
+(function($){
 
     $.fn.rangepicker = function(options) {
 
@@ -349,6 +349,9 @@ $(function(){
         function calculateCompareLastYear() {} // this won't be shown on calendar
         function calculateCompareCustom() {} // this needs to be able to override calculateInterval on click events
         // TODO: custom date ranges
+        // TODO: what if this is applied on multiple elements
+
+        return self;
     };
 
-}());
+}(jQuery));
