@@ -522,13 +522,23 @@ import moment from 'moment';
                 $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-start');
             }
 
-            // inputs
-            let startFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
-            let endFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
-            compareDateFrom.find('input').val(startFormatted);
-            compareDateTo.find('input').val(endFormatted);
-
+            setCompareInputs();
             highlightCompareSelection();
+        }
+
+        /**
+         * Set compare interval - to same days a year ago
+         * Clear calendar
+         */
+        function calculateCompareLastYear() {
+            // calculate
+            status.compareIntervalEnd = moment(status.intervalEnd).subtract('year', 1).format('YYYY-MM-DD');
+            status.compareIntervalStart = moment(status.intervalStart).subtract('year', 1).format('YYYY-MM-DD');
+
+            // reset
+            clearCompare();
+
+            setCompareInputs();
         }
 
         /**
@@ -539,6 +549,16 @@ import moment from 'moment';
             $('.rp-compare-end').removeClass('rp-compare-end');
             $('.rp-compare-oneday').removeClass('rp-compare-oneday');
             $('.rp-selected-compare').removeClass('rp-selected-compare');
+        }
+
+        /**
+         * Set value of compare inputs
+         */
+        function setCompareInputs() {
+            let startFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
+            let endFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+            compareDateFrom.find('input').val(startFormatted);
+            compareDateTo.find('input').val(endFormatted);
         }
 
 
@@ -554,7 +574,6 @@ import moment from 'moment';
         calculateCompare();
 
         //////////////// TODO:
-        function calculateCompareLastYear() {} // this won't be shown on calendar
         function calculateCompareCustom() {} // this needs to be able to override calculateInterval on click events
         // TODO: custom date ranges
         // TODO: what if this is applied on multiple elements
