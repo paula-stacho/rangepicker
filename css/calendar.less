@@ -29,17 +29,24 @@
             background-color: #357ebd;
             color: #ffffff;
         }
-        &.rp-interval-start {
+        &.rp-compare-start, &.rp-compare-end, &.rp-compare-oneday  {
+            background-color: #54bd35;
+            color: #ffffff;
+        }
+        &.rp-interval-start, &.rp-compare-start {
             border-radius: 4px 0 0 4px;
         }
-        &.rp-interval-end {
+        &.rp-interval-end, &.rp-compare-end {
             border-radius: 0 4px 4px 0;
         }
-        &.rp-interval-oneday {
+        &.rp-interval-oneday, &.rp-compare-oneday {
             border-radius: 4px 4px 4px 4px;
         }
         &.rp-selected-normal {
-            background-color: #ebf4f8;
+            background-color: #c7efff; //#ebf4f8
+        }
+        &.rp-selected-compare {
+            background-color: #bdf6c2; //#ecf9ed
         }
     }
 }

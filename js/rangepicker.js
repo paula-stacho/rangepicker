@@ -262,6 +262,19 @@ import moment from 'moment';
         }
 
         /**
+         * Highlight everything between compare interval start & end
+         */
+        function highlightCompareSelection() {
+            $('.rp-selected-compare').removeClass('rp-selected-compare');
+            $('.rp-day')
+                .filter(function(){
+                    var insideCompareInterval = ((this.dataset.date > status.compareIntervalStart) && (this.dataset.date < status.compareIntervalEnd));
+                    return insideCompareInterval;
+                })
+                .addClass('rp-selected-compare');
+        }
+
+        /**
          * +1 month
          */
         function moveForward() {
@@ -323,8 +336,8 @@ import moment from 'moment';
                 status.lastSelected = 'second';
             }
 
-            calculateCompareMirror(); // or something else
             highlightSelection();
+            calculateCompareMirror(); // or something else
             intervalChanged();
         }
 
@@ -333,7 +346,6 @@ import moment from 'moment';
          * @param event
          */
         function useDefinedInterval(event) {
-            console.log('event', event);
             resetStates();
             var interval = $(event.currentTarget).find('option:selected').val();
 
@@ -426,6 +438,35 @@ import moment from 'moment';
         }
 
 
+        /**
+         * Set compare interval - type mirror
+         * Show on calendar
+         */
+        function calculateCompareMirror() {
+            // calculate
+            let date = moment(status.intervalStart);
+            let length = Math.abs( date.diff(status.intervalEnd, 'days') );
+            status.compareIntervalEnd = date.subtract('days',1).format('YYYY-MM-DD');
+            status.compareIntervalStart = date.subtract('days', length).format('YYYY-MM-DD');
+            console.log('dates', date, length, status.compareIntervalEnd, status.compareIntervalStart);
+
+            // reset
+            $('.rp-compare-start').removeClass('rp-compare-start');
+            $('.rp-compare-end').removeClass('rp-compare-end');
+            $('.rp-compare-oneday').removeClass('rp-compare-oneday');
+
+            // paint start-end
+            if (status.compareIntervalEnd === status.compareIntervalStart) {
+                $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-oneday');
+            } else {
+                $(`.rp-day[data-date="${status.compareIntervalEnd}"]`).addClass('rp-compare-end');
+                $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-start');
+                highlightCompareSelection();
+            }
+
+        }
+
+
         //////////////////// INITIATE //////////////////////
         createCalendarStructure();
         var date = status.lastMonthDisplayed.clone();
@@ -435,9 +476,9 @@ import moment from 'moment';
         }
         addBindings();
         highlightInit();
+        calculateCompareMirror();
 
         //////////////// TODO:
-        function calculateCompareMirror() {} // this also needs to be visible on calendar
         function calculateCompareLastYear() {} // this won't be shown on calendar
         function calculateCompareCustom() {} // this needs to be able to override calculateInterval on click events
         // TODO: custom date ranges
