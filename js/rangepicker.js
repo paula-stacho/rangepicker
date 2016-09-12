@@ -36,6 +36,7 @@ import moment from 'moment';
             compareIntervalEnd: null
         };
 
+        var outputFrom, outputTo, outputCompareFrom, outputCompareTo;
         var prev, next, content, months;
         var dateFrom, dateTo, compareDateFrom, compareDateTo, showCompare, compareRangeOptions;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -45,9 +46,8 @@ import moment from 'moment';
          */
         function createCalendarStructure() {
 
-
-            prev = $('<span class="rp-prev"> < </span>').addClass('clickable');
-            next = $('<span class="rp-next"> > </span>').addClass('clickable');
+            prev = $('<span class="rp-prev"> < </span>').addClass('rp-clickable');
+            next = $('<span class="rp-next"> > </span>').addClass('rp-clickable');
             months = $('<span class="rp-months"></span>');
             content = $('<div class="rp-content"></div>');
 
@@ -56,36 +56,28 @@ import moment from 'moment';
                 .append(months)
                 .append(next);
 
-            if (self.is('input[type="text"]')){ // BIND TO INPUT AS POPUP
-                let startFormatted = moment(options.defaultStart).format('MMM D, YYYY');
-                let endFormatted = moment(options.defaultEnd).format('MMM D, YYYY');
+            self
+                .addClass('rangepicker')
+                .attr('readonly', true)
+                .after(content);
 
-                self
-                    .addClass('rangepicker')
-                    .attr('readonly', true)
-                    .val(startFormatted + ' - ' + endFormatted)
-                    .after(content);
+            content
+                .addClass('rp-popup')
+                .hide();
 
-                content
-                    .addClass('rp-popup')
-                    .hide();
-                self.click(() => {
-                    content.toggle();
-                    if (content.is(':visible')){
-                        options.onShow();
-                    } else {
-                        options.onHide();
-                    }
-                });
+            self.click(() => {
+                content.toggle();
+                if (content.is(':visible')){
+                    options.onShow();
+                } else {
+                    options.onHide();
+                }
+            });
 
-                // TODO: add a dropdown icon?
-            } else { // INSERT INTO ELEMENT
-                self
-                    .addClass('rangepicker')
-                    .append(content);
-            }
+            // TODO: add a dropdown icon?
 
             makeForm();
+            prepareOutputs();
         }
 
         /**
@@ -177,6 +169,32 @@ import moment from 'moment';
         }
 
         /**
+         * Prepare output structure
+         */
+        function prepareOutputs() {
+            var startFormatted = moment(options.defaultStart).format('MMM D, YYYY');
+            var endFormatted = moment(options.defaultEnd).format('MMM D, YYYY');
+            outputFrom = $(`<span class="rangepicker-from">${startFormatted}</span>`);
+            outputTo = $(`<span class="rangepicker-to">${endFormatted}</span>`);
+            var outputs = $('<div class="rangepicker-interval"> - </div>');
+            outputs
+                .prepend(outputFrom)
+                .append(outputTo);
+
+            outputCompareFrom = $(`<span class="rangepicker-compare-from"></span>`);
+            outputCompareTo = $(`<span class="rangepicker-compare-to"></span>`);
+            var outputsCompare = $('<div class="rangepicker-interval"> - </div>');
+            outputsCompare
+                .append(outputCompareFrom)
+                .append(outputCompareTo)
+                .hide();
+
+            self
+                .append(outputs)
+                .append(outputsCompare);
+        }
+
+        /**
          * Add event bindings
          */
         function addBindings() {
@@ -207,6 +225,14 @@ import moment from 'moment';
             $('.rp-daterange-preset').change(useDefinedInterval);
             showCompare.change(calculateCompare);
             compareRangeOptions.change(calculateCompare);
+            $('.rp-applyBtn').on('click', function(){
+                applyChanges();
+                content.hide();
+            });
+            $('.rp-cancelBtn').on('click', function(){
+                resetChanges();
+                content.hide();
+            });
         }
 
         /**
@@ -396,7 +422,7 @@ import moment from 'moment';
         /**
          * Reset interval markers
          */
-        function resetStates() {
+        function clearRangeDisplay() {
             $('.rp-interval-start').removeClass('rp-interval-start');
             $('.rp-interval-end').removeClass('rp-interval-end');
             $('.rp-interval-oneday').removeClass('rp-interval-oneday');
@@ -407,7 +433,7 @@ import moment from 'moment';
          * @param event
          */
         function calculateInterval(event) {
-            resetStates();
+            clearRangeDisplay();
             var dateClicked = event.target.dataset.date;
 
             if (!status.lastSelected || status.lastSelected === 'second'){ // selected first date
@@ -425,7 +451,7 @@ import moment from 'moment';
 
             highlightSelection();
             calculateCompare();
-            intervalChanged();
+            setInputs();
         }
 
         /** 
@@ -433,7 +459,7 @@ import moment from 'moment';
          * @param event
          */
         function useDefinedInterval(event) {
-            resetStates();
+           clearRangeDisplay();
             var interval = $(event.currentTarget).find('option:selected').val();
 
             var start, end;
@@ -468,7 +494,7 @@ import moment from 'moment';
 
             calculateCompare();
             highlightSelection();
-            intervalChanged();
+            setInputs();
         }
 
         /**
@@ -476,7 +502,7 @@ import moment from 'moment';
          * @param event
          */
         function changeInterval(event) {
-            resetStates();
+           clearRangeDisplay();
             var target = $(event.currentTarget);
             if (target.attr('name') === 'range-start'){
                 status.intervalStart = moment(target.val()).format('YYYY-MM-DD');
@@ -488,7 +514,7 @@ import moment from 'moment';
 
             calculateCompare();
             highlightSelection();
-            intervalChanged();
+            setInputs();
 
             // TODO: handle wrong input
         }
@@ -504,24 +530,58 @@ import moment from 'moment';
         }
 
         /**
-         * Callback whenever interval or compare interval changed
+         * Set date range inputs
          */
-        function intervalChanged() {
+        function setInputs() {
             let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
             let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
 
             dateFrom.find('input').val(startFormatted);
             dateTo.find('input').val(endFormatted);
-            if (self.is('input')){
-                self.val(startFormatted + ' - ' + endFormatted);
-            }
 
-            options.onChange({
-                intervalStart: status.intervalStart,
-                intervalEnd: status.intervalEnd,
-                compareIntervalStart: status.compareIntervalStart,
-                compareIntervalEnd: status.compareIntervalEnd
-            });
+            // options.onChange({
+            //     intervalStart: status.intervalStart,
+            //     intervalEnd: status.intervalEnd,
+            //     compareIntervalStart: status.compareIntervalStart,
+            //     compareIntervalEnd: status.compareIntervalEnd
+            // });
+        }
+
+        /**
+         * Apply changes = update outputs
+         */
+        function applyChanges() {
+            let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
+            let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
+            outputFrom.html(startFormatted);
+            outputTo.html(endFormatted);
+
+            let startCompareFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
+            let endCompareFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+            outputCompareFrom.html(startCompareFormatted);
+            outputCompareTo.html(endCompareFormatted);
+        }
+
+        /**
+         * Reset changes - restore original values
+         */
+        function resetChanges() {
+            status.intervalStart = moment( outputFrom.html() ).format('YYYY-MM-DD');
+            status.intervalEnd = moment( outputTo.html() ).format('YYYY-MM-DD');
+
+            status.compareIntervalStart = moment( outputCompareFrom.html() ).format('YYYY-MM-DD');
+            status.compareIntervalEnd = moment( outputCompareTo.html() ).format('YYYY-MM-DD');
+
+            setInputs();
+            setCompareInputs();
+            showCompare.prop('checked', false);
+            compareDateFrom.hide();
+            compareDateTo.hide();
+
+            clearRangeDisplay();
+            highlightSelection();
+            clearCompareRangeDisplay();
+            highlightCompareSelection();
         }
 
         /**
@@ -544,7 +604,7 @@ import moment from 'moment';
                 compareDateFrom.show();
                 compareDateTo.show();
             } else {
-                clearCompare();
+                clearCompareRangeDisplay();
                 compareDateFrom.hide();
                 compareDateTo.hide();
             }
@@ -580,7 +640,7 @@ import moment from 'moment';
             status.compareIntervalStart = moment(status.intervalStart).subtract('year', 1).format('YYYY-MM-DD');
 
             // reset
-            clearCompare();
+            clearCompareRangeDisplay();
 
             setCompareInputs();
         }
@@ -597,7 +657,7 @@ import moment from 'moment';
          * Custom compare calculate - requires user input
          */
         function calculateCompareCustom(type, event) {
-            clearCompare();
+            clearCompareRangeDisplay();
             if (type === 'input') { // input was changed
                 status.compareIntervalStart = moment( compareDateFrom.find('input').val() ).format('YYYY-MM-DD');
                 status.compareIntervalEnd = moment( compareDateTo.find('input').val() ).format('YYYY-MM-DD');
@@ -631,7 +691,7 @@ import moment from 'moment';
         /**
          * Clear out compare range
          */
-        function clearCompare() {
+        function clearCompareRangeDisplay() {
             $('.rp-compare-start').removeClass('rp-compare-start');
             $('.rp-compare-end').removeClass('rp-compare-end');
             $('.rp-compare-oneday').removeClass('rp-compare-oneday');
@@ -661,7 +721,6 @@ import moment from 'moment';
         calculateCompare();
 
         //////////////// TODO:
-        // TODO: custom date ranges
         // TODO: what if this is applied on multiple elements
 
         return self;
