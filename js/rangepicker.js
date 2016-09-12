@@ -318,13 +318,23 @@ import moment from 'moment';
             $('.rp-day').off('click');
             $('.rp-day').on('click', calculateInterval);
 
-            // TODO: display selection if it was out of sight
+            highlightSelection();
+            highlightCompareSelection();
         }
 
         /**
          * Highlight everything between interval start & end
          */
         function highlightSelection() {
+            // paint start-end
+            if (status.intervalEnd === status.intervalStart) {
+                $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-oneday');
+            } else {
+                $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
+                $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
+            }
+
+            // rest of the selection
             $('.rp-selected-normal').removeClass('rp-selected-normal');
             $('.rp-day')
                 .filter(function(){
@@ -346,6 +356,7 @@ import moment from 'moment';
                 $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-start');
             }
 
+            // rest of the selection
             $('.rp-selected-compare').removeClass('rp-selected-compare');
             $('.rp-day')
                 .filter(function(){
@@ -403,16 +414,11 @@ import moment from 'moment';
                 status.intervalStart = dateClicked;
                 status.intervalEnd = dateClicked;
                 status.lastSelected = 'first';
-                $(event.target).addClass('rp-interval-oneday');
             } else {
                 if (status.intervalStart < dateClicked){ // selected newer date as second
                     status.intervalEnd = dateClicked;
-                    $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
-                    $(event.target).addClass('rp-interval-end');
                 } else { // selected older date as second
                     status.intervalStart = dateClicked;
-                    $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
-                    $(event.target).addClass('rp-interval-start');
                 }
                 status.lastSelected = 'second';
             }
