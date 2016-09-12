@@ -278,8 +278,8 @@ import moment from 'moment';
          * Updates needed after view has been shifted
          */
         function updateDatesAfterCalendarShift() {
-            $('.rp-day').unbind('click');
-            $('.rp-day').click(calculateInterval);
+            $('.rp-day').off('click');
+            $('.rp-day').on('click', calculateInterval);
 
             // TODO: display selection if it was out of sight
         }
