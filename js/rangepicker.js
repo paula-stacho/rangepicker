@@ -36,7 +36,7 @@ import moment from 'moment';
         };
 
         var prev, next, content, months;
-        var dateFrom, dateTo;
+        var dateFrom, dateTo, compareDateFrom, compareDateTo, showCompare, compareRangeOptions;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
         /**
@@ -93,6 +93,8 @@ import moment from 'moment';
         function makeForm() {
             var content = $('.rp-content');
             var form = $('<div class="rp-form"></div>');
+
+            ///// Date Range
             var dateRangesOptions = [
                 [ 'custom', 'Custom' ],
                 [ 'today', 'Today' ],
@@ -108,7 +110,8 @@ import moment from 'moment';
             let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
             var dateRanges =
                 $(`<div>
-                    <select class="rp-daterange-preset">
+                    <label for="rp-daterange-preset">Date range:</label>
+                    <select id="rp-daterange-preset" class="rp-daterange-preset">
                         ${dateRangesOptions}
                     </select>
                 </div>`);
@@ -121,6 +124,36 @@ import moment from 'moment';
                     `<input class="rp-input-mini" type="date" name="range-end" value="${endFormatted}">` +
                 '</div>');
 
+            ///// Compare date range
+            var compareDateRangesOptions = [
+                [ 'mirror', 'Previous' ],
+                [ 'lastYear', 'Previous year' ],
+                [ 'custom', 'Custom' ]
+            ].reduce((list, next) => {
+                list = list + `<option value="${next[0]}">${next[1]}</option>`;
+                return list;
+            }, '');
+
+            showCompare = $(' <input type="checkbox" class="rp-compare-switch">');
+            compareRangeOptions = $(`<select id="rp-comparerange-preset" class="rp-comparerange-preset">
+                ${compareDateRangesOptions}
+                </select>`);
+            var compareDateRanges =
+                $(`<div>
+                    <label for="rp-comparerange-preset">Compare to period:</label>  
+                </div>`);
+            compareDateRanges
+                .prepend(showCompare)
+                .append(compareRangeOptions);
+            compareDateFrom =
+                $('<div class="rp-date-input">' +
+                    `<input class="rp-input-mini" type="date" name="compare-range-start" value="">` +
+                    '</div> - ');
+            compareDateTo =
+                $('<div class="rp-date-input">' +
+                    `<input class="rp-input-mini" type="date" name="compare-range-end" value="">` +
+                    '</div>');
+
             var controls = $('<div>');
             var applyBtn =
                 $('<button class="rp-btn rp-applyBtn">Apply</button>');
@@ -130,11 +163,13 @@ import moment from 'moment';
                 .append(applyBtn)
                 .append(cancelBtn);
 
-
             form
                 .append(dateRanges)
                 .append(dateFrom)
                 .append(dateTo)
+                .append(compareDateRanges)
+                .append(compareDateFrom)
+                .append(compareDateTo)
                 .append(controls);
 
             content.append(form);
@@ -150,6 +185,8 @@ import moment from 'moment';
             $('.rp-day').click(calculateInterval);
 
             $('.rp-daterange-preset').change(useDefinedInterval);
+            showCompare.change(calculateCompare);
+            compareRangeOptions.change(calculateCompare);
             $('.rp-date-input .rp-input-mini').change(changeInterval);
         }
 
@@ -214,7 +251,6 @@ import moment from 'moment';
                 table.append($(week));
             }
 
-            //console.log('TABLE', table, weekHeaderRow, weekHeader);
             var monthContainer = $('<div class="rp-month"></div>');
             monthContainer.append(monthNameContainer);
             monthContainer.append(table);
@@ -337,7 +373,7 @@ import moment from 'moment';
             }
 
             highlightSelection();
-            calculateCompareMirror(); // or something else
+            calculateCompare();
             intervalChanged();
         }
 
@@ -379,7 +415,7 @@ import moment from 'moment';
                     break;
             }
 
-            calculateCompareMirror();
+            calculateCompare();
             highlightSelection();
             intervalChanged();
         }
@@ -399,7 +435,7 @@ import moment from 'moment';
             $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
             $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
 
-            calculateCompareMirror();
+            calculateCompare();
             highlightSelection();
             intervalChanged();
 
@@ -437,6 +473,30 @@ import moment from 'moment';
             });
         }
 
+        /**
+         * Initiate compare interval creation - or not
+         */
+        function calculateCompare() {
+            if (showCompare.prop('checked')){
+                switch(compareRangeOptions.find('option:selected').val()) {
+                    case 'mirror':
+                        calculateCompareMirror();
+                        break;
+                    case 'lastYear':
+                        calculateCompareLastYear();
+                        break;
+                    case 'custom':
+                        calculateCompareCustom();
+                        break;
+                }
+                compareDateFrom.show();
+                compareDateTo.show();
+            } else {
+                clearCompare();
+                compareDateFrom.hide();
+                compareDateTo.hide();
+            }
+        }
 
         /**
          * Set compare interval - type mirror
@@ -448,7 +508,6 @@ import moment from 'moment';
             let length = Math.abs( date.diff(status.intervalEnd, 'days') );
             status.compareIntervalEnd = date.subtract('days',1).format('YYYY-MM-DD');
             status.compareIntervalStart = date.subtract('days', length).format('YYYY-MM-DD');
-            console.log('dates', date, length, status.compareIntervalEnd, status.compareIntervalStart);
 
             // reset
             $('.rp-compare-start').removeClass('rp-compare-start');
@@ -461,9 +520,25 @@ import moment from 'moment';
             } else {
                 $(`.rp-day[data-date="${status.compareIntervalEnd}"]`).addClass('rp-compare-end');
                 $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-start');
-                highlightCompareSelection();
             }
 
+            // inputs
+            let startFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
+            let endFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+            compareDateFrom.find('input').val(startFormatted);
+            compareDateTo.find('input').val(endFormatted);
+
+            highlightCompareSelection();
+        }
+
+        /**
+         * Clear out compare range
+         */
+        function clearCompare() {
+            $('.rp-compare-start').removeClass('rp-compare-start');
+            $('.rp-compare-end').removeClass('rp-compare-end');
+            $('.rp-compare-oneday').removeClass('rp-compare-oneday');
+            $('.rp-selected-compare').removeClass('rp-selected-compare');
         }
 
 
@@ -476,7 +551,7 @@ import moment from 'moment';
         }
         addBindings();
         highlightInit();
-        calculateCompareMirror();
+        calculateCompare();
 
         //////////////// TODO:
         function calculateCompareLastYear() {} // this won't be shown on calendar
