@@ -192,8 +192,8 @@ import moment from 'moment';
             compareDateTo.find('input').on('focus', handpickCompareInterval);
 
             // daterange input changes
-            dateFrom.find('input').on('change', calculateInterval);
-            dateTo.find('input').on('change', calculateInterval);
+            dateFrom.find('input').on('change', changeInterval);
+            dateTo.find('input').on('change', changeInterval);
 
             // compare input changes
             compareDateFrom.find('input').on('change', function(){
@@ -212,7 +212,7 @@ import moment from 'moment';
         /**
          * Wait for user input on base interval (calendar click)
          */
-        function handpickInterval(){ console.log('INTERVAL ...');
+        function handpickInterval(){
             $('.rp-day').off('click');
             $('.rp-day').on('click', calculateInterval);
         }
@@ -220,9 +220,9 @@ import moment from 'moment';
         /**
          * Wait for user input on compare interval (calendar click)
          */
-        function handpickCompareInterval(){ console.log('COMPARE ...');
+        function handpickCompareInterval(){
             $('.rp-day').off('click');
-            $('.rp-day').on('click', function(event) { console.log('event ?', event);
+            $('.rp-day').on('click', function(event) {
                 return calculateCompareCustom('click', event);
             });
         }
@@ -339,7 +339,6 @@ import moment from 'moment';
          */
         function highlightCompareSelection() {
             // paint start-end
-            console.log('highlighting', status.compareIntervalEnd, status.compareIntervalStart);
             if (status.compareIntervalEnd === status.compareIntervalStart) {
                 $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-oneday');
             } else {
@@ -524,6 +523,7 @@ import moment from 'moment';
          */
         function calculateCompare() {
             if (showCompare.prop('checked')){
+                highlightCompareSelection();
                 switch(compareRangeOptions.find('option:selected').val()) {
                     case 'mirror':
                         calculateCompareMirror();
@@ -590,7 +590,7 @@ import moment from 'moment';
         /**
          * Custom compare calculate - requires user input
          */
-        function calculateCompareCustom(type, event) { console.log('type', type, 'event', event);
+        function calculateCompareCustom(type, event) {
             clearCompare();
             if (type === 'input') { // input was changed
                 status.compareIntervalStart = moment( compareDateFrom.find('input').val() ).format('YYYY-MM-DD');
