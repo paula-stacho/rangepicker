@@ -2,6 +2,7 @@
   border: 1px solid #ccc;
   display: inline-block;
   padding: 0 1em;
+  background-color: #ffffff;
 }
 .rp-content.rp-popup {
   position: absolute;
@@ -29,31 +30,64 @@
   background-color: #357ebd;
   color: #ffffff;
 }
-.rp-content .rp-day.rp-interval-start {
+.rp-content .rp-day.rp-compare-start,
+.rp-content .rp-day.rp-compare-end,
+.rp-content .rp-day.rp-compare-oneday {
+  background-color: #54bd35;
+  color: #ffffff;
+}
+.rp-content .rp-day.rp-interval-start,
+.rp-content .rp-day.rp-compare-start {
   border-radius: 4px 0 0 4px;
 }
-.rp-content .rp-day.rp-interval-end {
+.rp-content .rp-day.rp-interval-end,
+.rp-content .rp-day.rp-compare-end {
   border-radius: 0 4px 4px 0;
 }
-.rp-content .rp-day.rp-interval-oneday {
+.rp-content .rp-day.rp-interval-oneday,
+.rp-content .rp-day.rp-compare-oneday {
   border-radius: 4px 4px 4px 4px;
 }
 .rp-content .rp-day.rp-selected-normal {
-  background-color: #ebf4f8;
+  background-color: #cdf0ff;
 }
-.clickable {
+.rp-content .rp-day.rp-selected-compare {
+  background-color: #b9ffc0;
+}
+.rp-clickable {
   cursor: pointer;
 }
 .rp-form {
   float: right;
-  padding: 10px 0 10px 10px;
+  padding: 0.5em;
 }
 .rp-form div {
-  padding: 10px;
+  padding: 0.25em;
 }
-.rp-form button {
-  padding: 10px;
+.rp-form .rp-applyBtn {
+  font-weight: bold;
 }
-.rp-form button:last-child {
-  float: right;
+.rp-form .rp-date-input {
+  display: inline-block;
+}
+.rp-form .rp-input-mini {
+  width: 9em;
+}
+.rp-form .rp-btn {
+  float: left;
+}
+.rangepicker {
+  border: 1px solid #e8e8e8;
+  display: inline-block;
+  padding: 0.5em 2em 0.5em 0.5em;
+  position: relative;
+}
+.rangepicker:before {
+  content: "▾";
+  position: absolute;
+  right: 0.7em;
+  top: 0.5em;
+}
+.rangepicker .rangepicker-interval {
+  font-weight: bold;
 }
