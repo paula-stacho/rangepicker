@@ -35,7 +35,7 @@ import moment from 'moment';
 
         var outputFrom, outputTo, outputCompareFrom, outputCompareTo;
         var prev, next, content, months, form;
-        var dateFrom, dateTo, compareDateFrom, compareDateTo, showCompare, compareRangeOptions;
+        var dateFrom, dateTo, compareDateFrom, compareDateTo, showCompare, compareRangeOptions, controls;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
         /**
@@ -143,7 +143,7 @@ import moment from 'moment';
                     `<input class="rp-input-mini" type="date" name="compare-range-end" value="">` +
                     '</div>');
 
-            var controls = $('<div>');
+            controls = $('<div>');
             var applyBtn =
                 $('<button class="rp-btn rp-applyBtn">Apply</button>');
             var cancelBtn =
@@ -221,11 +221,11 @@ import moment from 'moment';
             $('.rp-daterange-preset').change(useDefinedInterval);
             showCompare.change(calculateCompare);
             compareRangeOptions.change(calculateCompare);
-            $('.rp-applyBtn').on('click', function(){
+            controls.find('.rp-applyBtn').click(function(){
                 applyChanges();
                 content.hide();
             });
-            $('.rp-cancelBtn').on('click', function(){
+            controls.find('.rp-cancelBtn').click(function(){
                 resetChanges();
                 content.hide();
             });
@@ -350,15 +350,15 @@ import moment from 'moment';
         function highlightSelection() {
             // paint start-end
             if (status.intervalEnd === status.intervalStart) {
-                $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-oneday');
+                months.find(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-oneday');
             } else {
-                $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
-                $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
+                months.find(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
+                months.find(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
             }
 
             // rest of the selection
-            $('.rp-selected-normal').removeClass('rp-selected-normal');
-            $('.rp-day')
+            months.find('.rp-selected-normal').removeClass('rp-selected-normal');
+            months.find('.rp-day')
                 .filter(function(){
                     var insideInterval = ((this.dataset.date > status.intervalStart) && (this.dataset.date < status.intervalEnd));
                     return insideInterval;
@@ -519,8 +519,8 @@ import moment from 'moment';
          * Highlight start, end and selection
          */
         function highlightInit() {
-            $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
-            $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
+            months.find(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
+            months.find(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
 
             highlightSelection();
         }
