@@ -55,14 +55,16 @@ import moment from 'moment';
 
             self
                 .addClass('rangepicker')
-                .attr('readonly', true)
-                .after(content);
+                .append(content);
 
             content
                 .addClass('rp-popup')
+                .click(function(event){
+                    event.stopPropagation();
+                })
                 .hide();
 
-            self.click(() => {
+            self.click(function(){
                 content.toggle();
                 if (content.is(':visible')){
                     options.onShow();
@@ -70,8 +72,6 @@ import moment from 'moment';
                     options.onHide();
                 }
             });
-
-            // TODO: add a dropdown icon?
 
             makeForm();
             prepareOutputs();
