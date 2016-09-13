@@ -1,8 +1,5 @@
 'use strict';
 
-
-//import $ from 'jquery';
-//import jqueryui from 'jquery-ui';
 import moment from 'moment';
 
 (function($){
@@ -183,9 +180,9 @@ import moment from 'moment';
 
             outputCompareFrom = $(`<span class="rangepicker-compare-from"></span>`);
             outputCompareTo = $(`<span class="rangepicker-compare-to"></span>`);
-            var outputsCompare = $('<div class="rangepicker-interval"> - </div>');
+            var outputsCompare = $('<div class="rangepicker-compare-interval"> - </div>');
             outputsCompare
-                .append(outputCompareFrom)
+                .prepend(outputCompareFrom)
                 .append(outputCompareTo)
                 .hide();
 
@@ -454,7 +451,7 @@ import moment from 'moment';
             setInputs();
         }
 
-        /** 
+        /**
          * Set some of pre-defined time intervals
          * @param event
          */
@@ -538,13 +535,6 @@ import moment from 'moment';
 
             dateFrom.find('input').val(startFormatted);
             dateTo.find('input').val(endFormatted);
-
-            // options.onChange({
-            //     intervalStart: status.intervalStart,
-            //     intervalEnd: status.intervalEnd,
-            //     compareIntervalStart: status.compareIntervalStart,
-            //     compareIntervalEnd: status.compareIntervalEnd
-            // });
         }
 
         /**
@@ -560,6 +550,11 @@ import moment from 'moment';
             let endCompareFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
             outputCompareFrom.html(startCompareFormatted);
             outputCompareTo.html(endCompareFormatted);
+            if (startCompareFormatted && endCompareFormatted){
+                outputCompareFrom.parent().show();
+            } else {
+                outputCompareFrom.parent().hide();
+            }
         }
 
         /**
