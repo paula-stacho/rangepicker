@@ -14,7 +14,7 @@ import moment from 'moment';
             mirror: true,
             months: 3,
             lastMonthDisplayed: undefined,
-            defaultStart: moment().subtract('days', 6).format('YYYY-MM-DD'),
+            defaultStart: moment().subtract(6, 'days').format('YYYY-MM-DD'),
             defaultEnd: moment().format('YYYY-MM-DD'),
             onChange: function(){},
             onHide: function(){},
@@ -406,8 +406,8 @@ import moment from 'moment';
          * -1 month
          */
         function moveBack() {
-            status.lastMonthDisplayed.subtract('month', 1);
-            var firstMonthDisplayed = status.lastMonthDisplayed.clone().subtract('months', (options.months -1));
+            status.lastMonthDisplayed.subtract(1, 'month');
+            var firstMonthDisplayed = status.lastMonthDisplayed.clone().subtract((options.months -1), 'months');
 
             removeMonth('end');
             addMonth(firstMonthDisplayed.format('YYYY MM'), 'start');
@@ -467,21 +467,21 @@ import moment from 'moment';
                     $(`.rp-day[data-date="${today}"]`).addClass('rp-interval-oneday');
                     break;
                 case 'yesterday':
-                    let yesterday = moment().subtract('day', 1).format('YYYY-MM-DD');
+                    let yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
                     status.intervalStart = status.intervalEnd = yesterday;
                     $(`.rp-day[data-date="${yesterday}"]`).addClass('rp-interval-oneday');
                     break;
                 case 'last7Days':
-                    start = moment().subtract('day', 7).format('YYYY-MM-DD');
-                    end = moment().subtract('day', 1).format('YYYY-MM-DD');
+                    start = moment().subtract(7, 'day').format('YYYY-MM-DD');
+                    end = moment().subtract(1, 'day').format('YYYY-MM-DD');
                     status.intervalStart = start;
                     status.intervalEnd = end;
                     $(`.rp-day[data-date="${start}"]`).addClass('rp-interval-start');
                     $(`.rp-day[data-date="${end}"]`).addClass('rp-interval-end');
                     break;
                 case 'last30Days':
-                    start = moment().subtract('day', 30).format('YYYY-MM-DD');
-                    end = moment().subtract('day', 1).format('YYYY-MM-DD');
+                    start = moment().subtract(30, 'day').format('YYYY-MM-DD');
+                    end = moment().subtract(1, 'day').format('YYYY-MM-DD');
                     status.intervalStart = start;
                     status.intervalEnd = end;
                     $(`.rp-day[data-date="${start}"]`).addClass('rp-interval-start');
@@ -615,8 +615,8 @@ import moment from 'moment';
             // calculate
             let date = moment(status.intervalStart);
             let length = Math.abs( date.diff(status.intervalEnd, 'days') );
-            status.compareIntervalEnd = date.subtract('days',1).format('YYYY-MM-DD');
-            status.compareIntervalStart = date.subtract('days', length).format('YYYY-MM-DD');
+            status.compareIntervalEnd = date.subtract(1, 'days').format('YYYY-MM-DD');
+            status.compareIntervalStart = date.subtract(length, 'days').format('YYYY-MM-DD');
 
             // reset
             $('.rp-compare-start').removeClass('rp-compare-start');
@@ -711,7 +711,7 @@ import moment from 'moment';
         var date = status.lastMonthDisplayed.clone();
         for (var i=0; i < options.months; i++) {
             addMonth(date.format('YYYY MM'), 'start');
-            date.subtract('month', 1);
+            date.subtract(1, 'month');
         }
         addBindings();
         highlightInit();
@@ -721,6 +721,9 @@ import moment from 'moment';
         // TODO: what if this is applied on multiple elements
         // TODO: handle overlaps and bad inputs
         // TODO: highlight 'focus' on inputs
+        // TODO: switch the triangle up/down
+        // TODO: change next/prev icons
+        // TODO: add option to check compare in the start and
 
         return self;
     };
