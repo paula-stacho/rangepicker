@@ -34,7 +34,7 @@ import moment from 'moment';
         };
 
         var outputFrom, outputTo, outputCompareFrom, outputCompareTo;
-        var prev, next, content, months;
+        var prev, next, content, months, form;
         var dateFrom, dateTo, compareDateFrom, compareDateTo, showCompare, compareRangeOptions;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
@@ -81,8 +81,7 @@ import moment from 'moment';
          * Create form on the side
          */
         function makeForm() {
-            var content = $('.rp-content');
-            var form = $('<div class="rp-form"></div>');
+            form = $('<div class="rp-form"></div>');
 
             ///// Date Range
             var dateRangesOptions = [
@@ -393,7 +392,7 @@ import moment from 'moment';
          * +1 month
          */
         function moveForward() {
-            status.lastMonthDisplayed.add('month', 1);
+            status.lastMonthDisplayed.add(1, 'month');
 
             removeMonth('start');
             addMonth(status.lastMonthDisplayed.format('YYYY MM'), 'end');
