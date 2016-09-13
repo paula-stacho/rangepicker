@@ -546,13 +546,15 @@ import moment from 'moment';
             outputFrom.html(startFormatted);
             outputTo.html(endFormatted);
 
-            let startCompareFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
-            let endCompareFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
-            outputCompareFrom.html(startCompareFormatted);
-            outputCompareTo.html(endCompareFormatted);
-            if (startCompareFormatted && endCompareFormatted){
+            if (showCompare.prop('checked')){
+                let startCompareFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
+                let endCompareFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+                outputCompareFrom.html(startCompareFormatted);
+                outputCompareTo.html(endCompareFormatted);
                 outputCompareFrom.parent().show();
             } else {
+                status.compareIntervalStart = null;
+                status.compareIntervalEnd = null;
                 outputCompareFrom.parent().hide();
             }
         }
@@ -717,6 +719,7 @@ import moment from 'moment';
 
         //////////////// TODO:
         // TODO: what if this is applied on multiple elements
+        // TODO: handle overlaps and bad inputs
 
         return self;
     };
