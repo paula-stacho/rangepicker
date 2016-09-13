@@ -38,6 +38,7 @@ import moment from 'moment';
         var dateFrom, dateTo, compareDateFrom, compareDateTo, showCompare, compareRangeOptions, controls;
         var daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
+        /********************* STRUCTURE **********************/
         /**
          * Create basic DOM structure
          */
@@ -191,65 +192,6 @@ import moment from 'moment';
         }
 
         /**
-         * Add event bindings
-         */
-        function addBindings() {
-            // move month view
-            next.click(moveForward);
-            prev.click(moveBack);
-
-            // picking dates in calendar
-            handpickInterval();
-            dateFrom.find('input').on('focus', handpickInterval);
-            dateTo.find('input').on('focus', handpickInterval);
-            compareDateFrom.find('input').on('focus', handpickCompareInterval);
-            compareDateTo.find('input').on('focus', handpickCompareInterval);
-
-            // daterange input changes
-            dateFrom.find('input').on('change', changeInterval);
-            dateTo.find('input').on('change', changeInterval);
-
-            // compare input changes
-            compareDateFrom.find('input').on('change', function(){
-                return calculateCompareCustom('input');
-            });
-            compareDateTo.find('input').on('change', function(){
-                return calculateCompareCustom('input');
-            });
-
-            // form controls
-            $('.rp-daterange-preset').change(useDefinedInterval);
-            showCompare.change(calculateCompare);
-            compareRangeOptions.change(calculateCompare);
-            controls.find('.rp-applyBtn').click(function(){
-                applyChanges();
-                content.hide();
-            });
-            controls.find('.rp-cancelBtn').click(function(){
-                resetChanges();
-                content.hide();
-            });
-        }
-
-        /**
-         * Wait for user input on base interval (calendar click)
-         */
-        function handpickInterval(){
-            $('.rp-day').off('click');
-            $('.rp-day').on('click', calculateInterval);
-        }
-
-        /**
-         * Wait for user input on compare interval (calendar click)
-         */
-        function handpickCompareInterval(){
-            $('.rp-day').off('click');
-            $('.rp-day').on('click', function(event) {
-                return calculateCompareCustom('click', event);
-            });
-        }
-
-        /**
          * Calculate week days of the month
          * @param month
          * @returns {Array}
@@ -298,7 +240,7 @@ import moment from 'moment';
 
             // add names of days
             var weekHeader = daysOfWeek.map((day) => {
-               return `<th class="rp-day-name">${day}</th>`;
+                return `<th class="rp-day-name">${day}</th>`;
             }).join();
             var weekHeaderRow = '<tr>' + weekHeader + '</tr>';
             // add days
@@ -333,17 +275,67 @@ import moment from 'moment';
             }
         }
 
+        /********************* CONTROLS **********************/
         /**
-         * Updates needed after view has been shifted
+         * Add event bindings
          */
-        function updateDatesAfterCalendarShift() {
-            $('.rp-day').off('click');
-            $('.rp-day').on('click', calculateInterval);
+        function addBindings() {
+            // move month view
+            next.click(moveForward);
+            prev.click(moveBack);
 
-            highlightSelection();
-            highlightCompareSelection();
+            // picking dates in calendar
+            handpickInterval();
+            dateFrom.find('input').on('focus', handpickInterval);
+            dateTo.find('input').on('focus', handpickInterval);
+            compareDateFrom.find('input').on('focus', handpickCompareInterval);
+            compareDateTo.find('input').on('focus', handpickCompareInterval);
+
+            // daterange input changes
+            dateFrom.find('input').on('change', changeInterval);
+            dateTo.find('input').on('change', changeInterval);
+
+            // compare input changes
+            compareDateFrom.find('input').on('change', function(){
+                return calculateCompareCustom('input');
+            });
+            compareDateTo.find('input').on('change', function(){
+                return calculateCompareCustom('input');
+            });
+
+            // form controls
+            form.find('.rp-daterange-preset').change(useDefinedInterval);
+            showCompare.change(calculateCompare);
+            compareRangeOptions.change(calculateCompare);
+            controls.find('.rp-applyBtn').click(function(){
+                applyChanges();
+                content.hide();
+            });
+            controls.find('.rp-cancelBtn').click(function(){
+                resetChanges();
+                content.hide();
+            });
         }
 
+        /**
+         * Wait for user input on base interval (calendar click)
+         */
+        function handpickInterval(){
+            months.find('.rp-day').off('click');
+            months.find('.rp-day').on('click', calculateInterval);
+        }
+
+        /**
+         * Wait for user input on compare interval (calendar click)
+         */
+        function handpickCompareInterval(){
+            months.find('.rp-day').off('click');
+            months.find('.rp-day').on('click', function(event) {
+                return calculateCompareCustom('click', event);
+            });
+        }
+
+        /******************** ACTIONS ***********************/
         /**
          * Highlight everything between interval start & end
          */
@@ -372,15 +364,15 @@ import moment from 'moment';
         function highlightCompareSelection() {
             // paint start-end
             if (status.compareIntervalEnd === status.compareIntervalStart) {
-                $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-oneday');
+                months.find(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-oneday');
             } else {
-                $(`.rp-day[data-date="${status.compareIntervalEnd}"]`).addClass('rp-compare-end');
-                $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-start');
+                months.find(`.rp-day[data-date="${status.compareIntervalEnd}"]`).addClass('rp-compare-end');
+                months.find(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-start');
             }
 
             // rest of the selection
-            $('.rp-selected-compare').removeClass('rp-selected-compare');
-            $('.rp-day')
+            months.find('.rp-selected-compare').removeClass('rp-selected-compare');
+            months.find('.rp-day')
                 .filter(function(){
                     var insideCompareInterval = ((this.dataset.date > status.compareIntervalStart) && (this.dataset.date < status.compareIntervalEnd));
                     return insideCompareInterval;
@@ -416,38 +408,23 @@ import moment from 'moment';
         }
 
         /**
-         * Reset interval markers
+         * Updates needed after view has been shifted
          */
-        function clearRangeDisplay() {
-            $('.rp-interval-start').removeClass('rp-interval-start');
-            $('.rp-interval-end').removeClass('rp-interval-end');
-            $('.rp-interval-oneday').removeClass('rp-interval-oneday');
+        function updateDatesAfterCalendarShift() {
+            months.find('.rp-day').off('click');
+            months.find('.rp-day').on('click', calculateInterval);
+
+            highlightSelection();
+            highlightCompareSelection();
         }
 
         /**
-         * Decide which range was selected
-         * @param event
+         * Reset interval markers
          */
-        function calculateInterval(event) {
-            clearRangeDisplay();
-            var dateClicked = event.target.dataset.date;
-
-            if (!status.lastSelected || status.lastSelected === 'second'){ // selected first date
-                status.intervalStart = dateClicked;
-                status.intervalEnd = dateClicked;
-                status.lastSelected = 'first';
-            } else {
-                if (status.intervalStart < dateClicked){ // selected newer date as second
-                    status.intervalEnd = dateClicked;
-                } else { // selected older date as second
-                    status.intervalStart = dateClicked;
-                }
-                status.lastSelected = 'second';
-            }
-
-            highlightSelection();
-            calculateCompare();
-            setInputs();
+        function clearRangeDisplay() {
+            months.find('.rp-interval-start').removeClass('rp-interval-start');
+            months.find('.rp-interval-end').removeClass('rp-interval-end');
+            months.find('.rp-interval-oneday').removeClass('rp-interval-oneday');
         }
 
         /**
@@ -581,6 +558,61 @@ import moment from 'moment';
         }
 
         /**
+         * Prepare custom compare range selection
+         */
+        function prepareCompareCustom() {
+            compareDateFrom.find('input').focus();
+            handpickCompareInterval();
+        }
+
+        /**
+         * Clear out compare range
+         */
+        function clearCompareRangeDisplay() {
+            $('.rp-compare-start').removeClass('rp-compare-start');
+            $('.rp-compare-end').removeClass('rp-compare-end');
+            $('.rp-compare-oneday').removeClass('rp-compare-oneday');
+            $('.rp-selected-compare').removeClass('rp-selected-compare');
+        }
+
+        /**
+         * Set value of compare inputs
+         */
+        function setCompareInputs() {
+            let startFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
+            let endFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+            compareDateFrom.find('input').val(startFormatted);
+            compareDateTo.find('input').val(endFormatted);
+        }
+
+        /***************** SELECTION DECISIONS *****************/
+        /**
+         * Decide which range was selected
+         * @param event
+         */
+        function calculateInterval(event) {
+            clearRangeDisplay();
+            var dateClicked = event.target.dataset.date;
+
+            if (!status.lastSelected || status.lastSelected === 'second'){ // selected first date
+                status.intervalStart = dateClicked;
+                status.intervalEnd = dateClicked;
+                status.lastSelected = 'first';
+            } else {
+                if (status.intervalStart < dateClicked){ // selected newer date as second
+                    status.intervalEnd = dateClicked;
+                } else { // selected older date as second
+                    status.intervalStart = dateClicked;
+                }
+                status.lastSelected = 'second';
+            }
+
+            highlightSelection();
+            calculateCompare();
+            setInputs();
+        }
+
+        /**
          * Initiate compare interval creation - or not
          */
         function calculateCompare() {
@@ -642,14 +674,6 @@ import moment from 'moment';
         }
 
         /**
-         * Prepare custom compare range selection
-         */
-        function prepareCompareCustom() {
-            compareDateFrom.find('input').focus();
-            handpickCompareInterval();
-        }
-
-        /**
          * Custom compare calculate - requires user input
          */
         function calculateCompareCustom(type, event) {
@@ -683,27 +707,7 @@ import moment from 'moment';
             highlightCompareSelection();
             setCompareInputs();
         }
-
-        /**
-         * Clear out compare range
-         */
-        function clearCompareRangeDisplay() {
-            $('.rp-compare-start').removeClass('rp-compare-start');
-            $('.rp-compare-end').removeClass('rp-compare-end');
-            $('.rp-compare-oneday').removeClass('rp-compare-oneday');
-            $('.rp-selected-compare').removeClass('rp-selected-compare');
-        }
-
-        /**
-         * Set value of compare inputs
-         */
-        function setCompareInputs() {
-            let startFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
-            let endFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
-            compareDateFrom.find('input').val(startFormatted);
-            compareDateTo.find('input').val(endFormatted);
-        }
-
+        
 
         //////////////////// INITIATE //////////////////////
         createCalendarStructure();
