@@ -10,7 +10,7 @@
         position: absolute;
         top: 3em;
         right: 0;
-        width: 70em;
+        width: ~'calc(68ch + 27em)'; /* I used equations to get these numbers */
         z-index: 9999;
     }
 
@@ -82,6 +82,7 @@
     }
     .rp-input-mini {
         width: 9em;
+        line-height: 1.1em;
     }
     .rp-btn {
         float: left;
@@ -89,6 +90,7 @@
 }
 
 .rangepicker {
+    background-color: #ffffff;
     border: 1px solid #e8e8e8;
     display: inline-block;
     padding: 0.5em 2em 0.5em 0.5em;
