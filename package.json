@@ -2,12 +2,13 @@
   "name": "rangepicker",
   "version": "0.0.1",
   "description": "Date Range Comparison Picker",
-  "main": " ",
-  "directories": {
+  "main": "build/rangepicker.js",
+  "directories":  {
+    "bin": "build",
     "example": "example"
   },
   "scripts": {
-    "clean": "rm -r build",
+    "clean:all": "rm -r build",
     "autoprefixer": "postcss -u autoprefixer -r build/css/*",
     "less": "lessc css/calendar.less build/css/calendar.css",
     "lint": "eslint js",
@@ -67,7 +68,6 @@
     ]
   },
   "dependencies": {
-    "babel-preset-es2015": "^6.14.0",
     "jquery": "^3.1.0",
     "jquery-ui": "^1.12.0",
     "moment": "^2.14.1"
