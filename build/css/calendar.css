@@ -1,8 +1,9 @@
 .rp-content {
+  background-color: #ffffff;
   border: 1px solid #ccc;
   display: inline-block;
+  font-size: small;
   padding: 0 1em;
-  background-color: #ffffff;
 }
 .rp-content.rp-popup {
   position: absolute;
@@ -19,8 +20,15 @@
   text-align: center;
   padding: 0.3em 0;
 }
+.rp-content .rp-month .rp-day-name {
+  font-size: small;
+}
+.rp-content .rp-month .rp-days-table {
+  border-spacing: 0.05em;
+}
 .rp-content .rp-day {
-  padding: 0.1em;
+  font-size: small;
+  padding: 0.2em;
   text-align: center;
   cursor: pointer;
 }

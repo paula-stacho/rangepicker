@@ -720,6 +720,7 @@ import moment from 'moment';
         //////////////// TODO:
         // TODO: what if this is applied on multiple elements
         // TODO: handle overlaps and bad inputs
+        // TODO: highlight 'focus' on inputs
 
         return self;
     };
