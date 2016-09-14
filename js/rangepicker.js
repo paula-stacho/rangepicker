@@ -19,6 +19,7 @@ import moment from 'moment';
             defaultEnd: moment().format('YYYY-MM-DD'),
             defaultCompareStart: null,
             defaultCompareEnd: null,
+            defaultCompareType: 'custom',
             onChange: function(){},
             onHide: function(){},
             onShow: function(){},
@@ -138,7 +139,9 @@ import moment from 'moment';
                 compareStartFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
                 compareEndFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
                 showCompare.prop('checked', true);
-                compareRangeOptions.val('custom');
+                compareRangeOptions.val(options.defaultCompareType);
+            } else if (options.defaultCompareType) {
+                compareRangeOptions.val(options.defaultCompareType);
             }
             var compareDateRanges =
                 $(`<div class="rp-comparerange-preset-container">
