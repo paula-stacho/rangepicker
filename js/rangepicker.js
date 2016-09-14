@@ -70,6 +70,7 @@ import moment from 'moment';
 
             self.click(function(){
                 content.toggle();
+                self.toggleClass('open');
                 if (content.is(':visible')){
                     options.onShow();
                 } else {
@@ -748,7 +749,6 @@ import moment from 'moment';
         // TODO: what if this is applied on multiple elements
         // TODO: handle overlaps and bad inputs
         // TODO: highlight 'focus' on inputs
-        // TODO: switch the triangle up/down
         // TODO: change next/prev icons
         // TODO: add option to set default compare type
         // TODO: options on the position of popup

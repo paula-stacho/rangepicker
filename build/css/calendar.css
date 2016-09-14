@@ -101,6 +101,9 @@
   right: 0.7em;
   top: 0.5em;
 }
+.rangepicker.open:before {
+  content: "▴";
+}
 .rangepicker .rangepicker-interval {
   font-weight: bold;
 }
