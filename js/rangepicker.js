@@ -194,7 +194,6 @@ import moment from 'moment';
                 .append(outputTo);
 
             var compareStartFormatted, compareEndFormatted;
-            console.log('!!!', status.compareIntervalEnd);
             if (status.compareIntervalStart && status.compareIntervalEnd) {
                 compareStartFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
                 compareEndFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
@@ -596,6 +595,13 @@ import moment from 'moment';
                 status.compareIntervalEnd = null;
                 outputCompareFrom.parent().hide();
             }
+
+            options.onChange({
+                intervalStart: status.intervalStart,
+                intervalEnd: status.intervalEnd,
+                compareIntervalStart: status.compareIntervalStart,
+                compareIntervalEnd: status.compareIntervalEnd
+            });
         }
 
         /**
@@ -796,7 +802,6 @@ import moment from 'moment';
         // TODO: what if this is applied on multiple elements
         // TODO: handle overlaps and bad inputs
         // TODO: change next/prev icons
-        // TODO: add option to set default compare type
         // TODO: options on the position of popup
 
         return self;
