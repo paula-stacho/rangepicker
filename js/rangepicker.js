@@ -31,10 +31,10 @@ import moment from 'moment';
             lastMonthDisplayed: moment(options.lastMonthDisplayed),
             lastSelected: '',
             lastSelectedCompare: '',
-            intervalStart: options.defaultStart || null,
-            intervalEnd: options.defaultEnd || null,
-            compareIntervalStart: options.defaultCompareStart || null,
-            compareIntervalEnd: options.defaultCompareEnd || null
+            intervalStart: moment(options.defaultStart).format('YYYY-MM-DD') || null,
+            intervalEnd:  moment(options.defaultEnd).format('YYYY-MM-DD') || null,
+            compareIntervalStart:  moment(options.defaultCompareStart).format('YYYY-MM-DD') || null,
+            compareIntervalEnd:  moment(options.defaultCompareEnd).format('YYYY-MM-DD') || null
         };
 
         var outputFrom, outputTo, outputCompareFrom, outputCompareTo;
@@ -100,8 +100,8 @@ import moment from 'moment';
                 return list;
             }, '');
 
-            var startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
-            var endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
+            var startFormatted = moment(status.intervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
+            var endFormatted = moment(status.intervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
             var dateRanges =
                 $(`<div class="rp-daterange-preset-container">
                     <label for="rp-daterange-preset">Date range:</label>
@@ -135,8 +135,8 @@ import moment from 'moment';
                 ${compareDateRangesOptions}
                 </select>`);
             if (status.compareIntervalStart && status.compareIntervalEnd) {
-                compareStartFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
-                compareEndFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+                compareStartFormatted = moment(status.compareIntervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
+                compareEndFormatted = moment(status.compareIntervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
                 showCompare.prop('checked', true);
                 compareRangeOptions.val(options.defaultCompareType);
             } else if (options.defaultCompareType) {
@@ -184,8 +184,8 @@ import moment from 'moment';
          * Prepare output structure
          */
         function prepareOutputs() {
-            var startFormatted = moment(options.defaultStart).format('MMM D, YYYY');
-            var endFormatted = moment(options.defaultEnd).format('MMM D, YYYY');
+            var startFormatted = moment(status.intervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
+            var endFormatted = moment(status.intervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
             outputFrom = $(`<span class="rangepicker-from">${startFormatted}</span>`);
             outputTo = $(`<span class="rangepicker-to">${endFormatted}</span>`);
             var outputs = $('<div class="rangepicker-interval"> - </div>');
@@ -195,8 +195,8 @@ import moment from 'moment';
 
             var compareStartFormatted, compareEndFormatted;
             if (status.compareIntervalStart && status.compareIntervalEnd) {
-                compareStartFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
-                compareEndFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+                compareStartFormatted = moment(status.compareIntervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
+                compareEndFormatted = moment(status.compareIntervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
             }
             outputCompareFrom = $(`<span class="rangepicker-compare-from">${compareStartFormatted}</span>`);
             outputCompareTo = $(`<span class="rangepicker-compare-to">${compareEndFormatted}</span>`);
@@ -220,8 +220,8 @@ import moment from 'moment';
          */
         function prepareWeeks(month) {
             var weeks = [];
-            var firstDay = moment(month + ' 01');
-            var lastDay = moment(month + ' 01').endOf('month');
+            var firstDay = moment(month + ' 01', 'YYYY MM DD');
+            var lastDay = moment(month + ' 01', 'YYYY MM DD').endOf('month');
             var monthNum = firstDay.format('MM');
             var date;
 
@@ -257,7 +257,7 @@ import moment from 'moment';
          * @param position
          */
         function addMonth(month, position) {
-            var monthName = moment(month + ' 01').format('MMMM YYYY');
+            var monthName = moment(month + ' 01', 'YYYY MM DD').format('MMMM YYYY');
             var monthNameContainer = $(`<span class="rp-month-name">${monthName}</span>`);
 
             // add names of days
@@ -539,9 +539,9 @@ import moment from 'moment';
            clearRangeDisplay();
             var target = $(event.currentTarget);
             if (target.attr('name') === 'range-start'){
-                status.intervalStart = moment(target.val()).format('YYYY-MM-DD');
+                status.intervalStart = moment(new Date( target.val() )).format('YYYY-MM-DD');
             } else if (target.attr('name') === 'range-end') {
-                status.intervalEnd = moment(target.val()).format('YYYY-MM-DD');
+                status.intervalEnd = moment(new Date( target.val() )).format('YYYY-MM-DD');
             }
             $(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
             $(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
@@ -568,8 +568,8 @@ import moment from 'moment';
          * Set date range inputs
          */
         function setInputs() {
-            let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
-            let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
+            let startFormatted = moment(status.intervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
+            let endFormatted = moment(status.intervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
 
             dateFrom.find('input').val(startFormatted);
             dateTo.find('input').val(endFormatted);
@@ -579,14 +579,14 @@ import moment from 'moment';
          * Apply changes = update outputs
          */
         function applyChanges() {
-            let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
-            let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
+            let startFormatted = moment(status.intervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
+            let endFormatted = moment(status.intervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
             outputFrom.html(startFormatted);
             outputTo.html(endFormatted);
 
             if (showCompare.prop('checked')){
-                let startCompareFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
-                let endCompareFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+                let startCompareFormatted = moment(status.compareIntervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
+                let endCompareFormatted = moment(status.compareIntervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
                 outputCompareFrom.html(startCompareFormatted);
                 outputCompareTo.html(endCompareFormatted);
                 outputCompareFrom.parent().show();
@@ -608,11 +608,11 @@ import moment from 'moment';
          * Reset changes - restore original values
          */
         function resetChanges() {
-            status.intervalStart = moment( outputFrom.html() ).format('YYYY-MM-DD');
+            status.intervalStart = moment( new Date( outputFrom.html() ) ).format('YYYY-MM-DD');
             status.intervalEnd = moment( outputTo.html() ).format('YYYY-MM-DD');
 
-            status.compareIntervalStart = moment( outputCompareFrom.html() ).format('YYYY-MM-DD');
-            status.compareIntervalEnd = moment( outputCompareTo.html() ).format('YYYY-MM-DD');
+            status.compareIntervalStart = moment( new Date( outputCompareFrom.html() ) ).format('YYYY-MM-DD');
+            status.compareIntervalEnd = moment( new Date( outputCompareTo.html() ) ).format('YYYY-MM-DD');
 
             setInputs();
             setCompareInputs();
@@ -650,8 +650,8 @@ import moment from 'moment';
          * Set value of compare inputs
          */
         function setCompareInputs() {
-            let startFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
-            let endFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+            let startFormatted = moment(status.compareIntervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
+            let endFormatted = moment(status.compareIntervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
             compareDateFrom.find('input').val(startFormatted);
             compareDateTo.find('input').val(endFormatted);
         }
@@ -717,7 +717,7 @@ import moment from 'moment';
          */
         function calculateCompareMirror() {
             // calculate
-            let date = moment(status.intervalStart);
+            let date = moment(status.intervalStart, 'YYYY-MM-DD');
             let length = Math.abs( date.diff(status.intervalEnd, 'days') );
             status.compareIntervalEnd = date.subtract(1, 'days').format('YYYY-MM-DD');
             status.compareIntervalStart = date.subtract(length, 'days').format('YYYY-MM-DD');
@@ -739,8 +739,8 @@ import moment from 'moment';
          */
         function calculateCompareLastYear() {
             // calculate
-            status.compareIntervalEnd = moment(status.intervalEnd).subtract('year', 1).format('YYYY-MM-DD');
-            status.compareIntervalStart = moment(status.intervalStart).subtract('year', 1).format('YYYY-MM-DD');
+            status.compareIntervalEnd = moment(status.intervalEnd, 'YYYY-MM-DD').subtract('year', 1).format('YYYY-MM-DD');
+            status.compareIntervalStart = moment(status.intervalStart, 'YYYY-MM-DD').subtract('year', 1).format('YYYY-MM-DD');
 
             // show results
             clearCompareRangeDisplay();
@@ -754,8 +754,8 @@ import moment from 'moment';
         function calculateCompareCustom(type, event) {
             clearCompareRangeDisplay();
             if (type === 'input') { // input was changed
-                status.compareIntervalStart = moment( compareDateFrom.find('input').val() ).format('YYYY-MM-DD');
-                status.compareIntervalEnd = moment( compareDateTo.find('input').val() ).format('YYYY-MM-DD');
+                status.compareIntervalStart = moment( new Date(compareDateFrom.find('input').val() ) ).format('YYYY-MM-DD');
+                status.compareIntervalEnd = moment( new Date(compareDateTo.find('input').val() ) ).format('YYYY-MM-DD');
             } else if (type === 'click') {
                 var dateClicked = event.target.dataset.date;
 
