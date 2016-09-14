@@ -82,8 +82,20 @@
   display: inline-block;
 }
 .rp-form .rp-input-mini {
+  border: 1px solid #adadad;
+  border-radius: 0.25rem;
   width: 9em;
-  line-height: 1.1em;
+  line-height: 1.5em;
+}
+.rp-form .rp-input-mini:not(.focus) {
+  margin-bottom: 1px;
+  margin-top: 1px;
+}
+.rp-form .rp-input-mini.rp-input-interval.focus {
+  border: 2px solid #357ebd;
+}
+.rp-form .rp-input-mini.rp-input-compare.focus {
+  border: 2px solid #54bd35;
 }
 .rp-form .rp-btn {
   float: left;

@@ -103,7 +103,7 @@ import moment from 'moment';
             var startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
             var endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
             var dateRanges =
-                $(`<div>
+                $(`<div class="rp-daterange-preset-container">
                     <label for="rp-daterange-preset">Date range:</label>
                     <select id="rp-daterange-preset" class="rp-daterange-preset">
                         ${dateRangesOptions}
@@ -111,11 +111,11 @@ import moment from 'moment';
                 </div>`);
             dateFrom =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini" type="date" name="range-start" value="${startFormatted}">` +
+                    `<input class="rp-input-mini rp-input-interval focus" type="date" name="range-start" value="${startFormatted}">` +
                 '</div> - ');
             dateTo =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini" type="date" name="range-end" value="${endFormatted}">` +
+                    `<input class="rp-input-mini rp-input-interval" type="date" name="range-end" value="${endFormatted}">` +
                 '</div>');
 
             ///// Compare date range
@@ -140,7 +140,7 @@ import moment from 'moment';
                 compareRangeOptions.val('custom');
             }
             var compareDateRanges =
-                $(`<div>
+                $(`<div class="rp-comparerange-preset-container">
                     <label for="rp-comparerange-preset">Compare to period:</label>  
                 </div>`);
             compareDateRanges
@@ -148,11 +148,11 @@ import moment from 'moment';
                 .append(compareRangeOptions);
             compareDateFrom =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini" type="date" name="compare-range-start" value="${compareStartFormatted}">` +
+                    `<input class="rp-input-mini rp-input-compare" type="date" name="compare-range-start" value="${compareStartFormatted}">` +
                     '</div> - ');
             compareDateTo =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini" type="date" name="compare-range-end" value="${compareEndFormatted}">` +
+                    `<input class="rp-input-mini rp-input-compare" type="date" name="compare-range-end" value="${compareEndFormatted}">` +
                     '</div>');
 
             controls = $('<div>');
@@ -310,21 +310,27 @@ import moment from 'moment';
             compareDateTo.find('input').on('focus', handpickCompareInterval);
 
             // daterange input changes
-            dateFrom.find('input').on('change', changeInterval);
-            dateTo.find('input').on('change', changeInterval);
+            dateFrom.find('input')
+                .on('change', changeInterval)
+                .on('focus', (e) => { addFocus($(e.currentTarget)); });
+            dateTo.find('input')
+                .on('change', changeInterval)
+                .on('focus', (e) => { addFocus($(e.currentTarget)); });
 
             // compare input changes
-            compareDateFrom.find('input').on('change', function(){
-                return calculateCompareCustom('input');
-            });
-            compareDateTo.find('input').on('change', function(){
-                return calculateCompareCustom('input');
-            });
+            compareDateFrom.find('input')
+                .on('change', () => { calculateCompareCustom('input'); })
+                .on('focus', (e) => { addFocus($(e.currentTarget)); });
+            compareDateTo.find('input')
+                .on('change', () => { calculateCompareCustom('input'); })
+                .on('focus', (e) => { addFocus($(e.currentTarget)); });
 
             // form controls
-            form.find('.rp-daterange-preset').change(useDefinedInterval);
-            showCompare.change(calculateCompare);
-            compareRangeOptions.change(calculateCompare);
+            form.find('.rp-daterange-preset').on('change', useDefinedInterval);
+            showCompare
+                .on('change', () => { calculateCompare(); });
+            compareRangeOptions
+                .on('change', () => { calculateCompare(); });
             controls.find('.rp-applyBtn').click(function(){
                 applyChanges();
                 content.hide();
@@ -333,12 +339,36 @@ import moment from 'moment';
                 resetChanges();
                 content.hide();
             });
+
+            form.find('.rp-daterange-preset-container')
+                .on('click', function() {
+                    addFocus(dateFrom.find('input'));
+                    handpickInterval();
+                });
+            form.find('.rp-comparerange-preset-container')
+                .on('click', function(event) {
+                    var target = $(event.target);
+                    if (!target.hasClass('rp-compare-switch') || target.prop('checked')){
+                        addFocus(compareDateFrom.find('input'));
+                        handpickCompareInterval();
+                    } else {
+                        addFocus(dateFrom.find('input'));
+                        handpickInterval();
+                    }
+                    if (!target.hasClass('rp-compare-switch') && !showCompare.prop('checked')) {
+                        showCompare.prop('checked', true);
+                        compareDateFrom.show();
+                        compareDateTo.show();
+                    }
+                });
         }
 
         /**
          * Wait for user input on base interval (calendar click)
          */
         function handpickInterval(){
+            status.lastSelected = null;
+
             months.find('.rp-day').off('click');
             months.find('.rp-day').on('click', calculateInterval);
         }
@@ -347,6 +377,8 @@ import moment from 'moment';
          * Wait for user input on compare interval (calendar click)
          */
         function handpickCompareInterval(){
+            status.lastSelectedCompare = null;
+
             months.find('.rp-day').off('click');
             months.find('.rp-day').on('click', function(event) {
                 return calculateCompareCustom('click', event);
@@ -354,6 +386,14 @@ import moment from 'moment';
         }
 
         /******************** ACTIONS ***********************/
+        /**
+         * Add focus class to input (&siblings)
+         */
+        function addFocus(elem) {
+            form.find('.focus').removeClass('focus');
+            elem.addClass('focus');
+        }
+
         /**
          * Highlight everything between interval start & end
          */
@@ -547,8 +587,6 @@ import moment from 'moment';
                 outputCompareFrom.html(startCompareFormatted);
                 outputCompareTo.html(endCompareFormatted);
                 outputCompareFrom.parent().show();
-
-                console.log('dates', status.compareIntervalEnd, status.compareIntervalStart, startCompareFormatted);
             } else {
                 status.compareIntervalStart = null;
                 status.compareIntervalEnd = null;
@@ -621,6 +659,7 @@ import moment from 'moment';
                 status.intervalStart = dateClicked;
                 status.intervalEnd = dateClicked;
                 status.lastSelected = 'first';
+                addFocus(dateTo.find('input'));
             } else {
                 if (status.intervalStart < dateClicked){ // selected newer date as second
                     status.intervalEnd = dateClicked;
@@ -628,6 +667,7 @@ import moment from 'moment';
                     status.intervalStart = dateClicked;
                 }
                 status.lastSelected = 'second';
+                addFocus(dateFrom.find('input'));
             }
 
             highlightSelection();
@@ -649,7 +689,7 @@ import moment from 'moment';
                         calculateCompareLastYear();
                         break;
                     case 'custom':
-                        prepareCompareCustom();
+                        calculateCompareCustom();
                         break;
                 }
                 compareDateFrom.show();
@@ -714,6 +754,7 @@ import moment from 'moment';
                     status.compareIntervalEnd = dateClicked;
                     status.lastSelectedCompare = 'first';
                     $(event.target).addClass('rp-compare-oneday');
+                    addFocus(compareDateTo.find('input'));
                 } else {
                     if (status.compareIntervalStart < dateClicked){ // selected newer date as second
                         status.compareIntervalEnd = dateClicked;
@@ -725,6 +766,7 @@ import moment from 'moment';
                         $(event.target).addClass('rp-compare-start');
                     }
                     status.lastSelectedCompare = 'second';
+                    addFocus(compareDateFrom.find('input'));
                 }
                 // TODO: but check that the ranges don't overlap
             }

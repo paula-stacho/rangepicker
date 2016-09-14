@@ -81,8 +81,20 @@
         display: inline-block;
     }
     .rp-input-mini {
+        border: 1px solid #adadad;
+        border-radius: 0.25rem;
         width: 9em;
-        line-height: 1.1em;
+        line-height: 1.5em;
+        &:not(.focus) {
+            margin-bottom: 1px;
+            margin-top: 1px;
+        }
+        &.rp-input-interval.focus {
+            border: 2px solid #357ebd;
+        }
+        &.rp-input-compare.focus {
+            border: 2px solid #54bd35;
+        }
     }
     .rp-btn {
         float: left;
