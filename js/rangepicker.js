@@ -7,6 +7,7 @@ import moment from 'moment';
     $.fn.rangepicker = function(options) {
 
         var self = this;
+
         options = $.extend({
 
             datemin: '1995-01-01',
@@ -16,6 +17,8 @@ import moment from 'moment';
             lastMonthDisplayed: undefined,
             defaultStart: moment().subtract(6, 'days').format('YYYY-MM-DD'),
             defaultEnd: moment().format('YYYY-MM-DD'),
+            defaultCompareStart: null,
+            defaultCompareEnd: null,
             onChange: function(){},
             onHide: function(){},
             onShow: function(){},
@@ -29,8 +32,8 @@ import moment from 'moment';
             lastSelectedCompare: '',
             intervalStart: options.defaultStart || null,
             intervalEnd: options.defaultEnd || null,
-            compareIntervalStart: null,
-            compareIntervalEnd: null
+            compareIntervalStart: options.defaultCompareStart || null,
+            compareIntervalEnd: options.defaultCompareEnd || null
         };
 
         var outputFrom, outputTo, outputCompareFrom, outputCompareTo;
@@ -96,8 +99,8 @@ import moment from 'moment';
                 return list;
             }, '');
 
-            let startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
-            let endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
+            var startFormatted = moment(status.intervalStart).format('MMM D, YYYY');
+            var endFormatted = moment(status.intervalEnd).format('MMM D, YYYY');
             var dateRanges =
                 $(`<div>
                     <label for="rp-daterange-preset">Date range:</label>
@@ -124,10 +127,17 @@ import moment from 'moment';
                 return list;
             }, '');
 
+            var compareStartFormatted, compareEndFormatted;
             showCompare = $(' <input type="checkbox" class="rp-compare-switch">');
             compareRangeOptions = $(`<select id="rp-comparerange-preset" class="rp-comparerange-preset">
                 ${compareDateRangesOptions}
                 </select>`);
+            if (status.compareIntervalStart && status.compareIntervalEnd) {
+                compareStartFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
+                compareEndFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+                showCompare.prop('checked', true);
+                compareRangeOptions.val('custom');
+            }
             var compareDateRanges =
                 $(`<div>
                     <label for="rp-comparerange-preset">Compare to period:</label>  
@@ -137,11 +147,11 @@ import moment from 'moment';
                 .append(compareRangeOptions);
             compareDateFrom =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini" type="date" name="compare-range-start" value="">` +
+                    `<input class="rp-input-mini" type="date" name="compare-range-start" value="${compareStartFormatted}">` +
                     '</div> - ');
             compareDateTo =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini" type="date" name="compare-range-end" value="">` +
+                    `<input class="rp-input-mini" type="date" name="compare-range-end" value="${compareEndFormatted}">` +
                     '</div>');
 
             controls = $('<div>');
@@ -178,13 +188,20 @@ import moment from 'moment';
                 .prepend(outputFrom)
                 .append(outputTo);
 
-            outputCompareFrom = $(`<span class="rangepicker-compare-from"></span>`);
-            outputCompareTo = $(`<span class="rangepicker-compare-to"></span>`);
+            var compareStartFormatted, compareEndFormatted;
+            if (status.compareIntervalStart && status.compareIntervalEnd) {
+                compareStartFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
+                compareEndFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
+            }
+            outputCompareFrom = $(`<span class="rangepicker-compare-from">${compareStartFormatted}</span>`);
+            outputCompareTo = $(`<span class="rangepicker-compare-to">${compareEndFormatted}</span>`);
             var outputsCompare = $('<div class="rangepicker-compare-interval"> - </div>');
             outputsCompare
                 .prepend(outputCompareFrom)
-                .append(outputCompareTo)
-                .hide();
+                .append(outputCompareTo);
+            if (!status.compareIntervalStart || !status.compareIntervalEnd){
+                outputsCompare.hide();
+            }
 
             self
                 .append(outputs)
@@ -496,10 +513,11 @@ import moment from 'moment';
          * Highlight start, end and selection
          */
         function highlightInit() {
-            months.find(`.rp-day[data-date="${status.intervalStart}"]`).addClass('rp-interval-start');
-            months.find(`.rp-day[data-date="${status.intervalEnd}"]`).addClass('rp-interval-end');
-
             highlightSelection();
+
+            if (status.compareIntervalStart && status.compareIntervalEnd) {
+                highlightCompareSelection();
+            }
         }
 
         /**
@@ -528,6 +546,8 @@ import moment from 'moment';
                 outputCompareFrom.html(startCompareFormatted);
                 outputCompareTo.html(endCompareFormatted);
                 outputCompareFrom.parent().show();
+
+                console.log('dates', status.compareIntervalEnd, status.compareIntervalStart, startCompareFormatted);
             } else {
                 status.compareIntervalStart = null;
                 status.compareIntervalEnd = null;
@@ -730,8 +750,7 @@ import moment from 'moment';
         // TODO: highlight 'focus' on inputs
         // TODO: switch the triangle up/down
         // TODO: change next/prev icons
-        // TODO: add option to check compare in the start and
-        // TODO: check compare if compareInterval not empty on show
+        // TODO: add option to set default compare type
         // TODO: options on the position of popup
 
         return self;
