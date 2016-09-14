@@ -1,9 +1,9 @@
 {
   "name": "rangepicker",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Date Range Comparison Picker",
   "main": "build/rangepicker.js",
-  "directories":  {
+  "directories": {
     "bin": "build",
     "example": "example"
   },
