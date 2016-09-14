@@ -128,7 +128,8 @@ import moment from 'moment';
                 return list;
             }, '');
 
-            var compareStartFormatted, compareEndFormatted;
+            var compareStartFormatted = '';
+            var compareEndFormatted = '';
             showCompare = $(' <input type="checkbox" class="rp-compare-switch">');
             compareRangeOptions = $(`<select id="rp-comparerange-preset" class="rp-comparerange-preset">
                 ${compareDateRangesOptions}
@@ -357,8 +358,7 @@ import moment from 'moment';
                     }
                     if (!target.hasClass('rp-compare-switch') && !showCompare.prop('checked')) {
                         showCompare.prop('checked', true);
-                        compareDateFrom.show();
-                        compareDateTo.show();
+                        calculateCompare();
                     }
                 });
         }
@@ -790,7 +790,6 @@ import moment from 'moment';
         //////////////// TODO:
         // TODO: what if this is applied on multiple elements
         // TODO: handle overlaps and bad inputs
-        // TODO: highlight 'focus' on inputs
         // TODO: change next/prev icons
         // TODO: add option to set default compare type
         // TODO: options on the position of popup
