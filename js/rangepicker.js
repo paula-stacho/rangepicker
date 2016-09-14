@@ -547,9 +547,11 @@ import moment from 'moment';
 
             setInputs();
             setCompareInputs();
-            showCompare.prop('checked', false);
-            compareDateFrom.hide();
-            compareDateTo.hide();
+            if (!status.compareIntervalEnd || !status.compareIntervalEnd){
+                showCompare.prop('checked', false);
+                compareDateFrom.hide();
+                compareDateTo.hide();
+            }
 
             clearRangeDisplay();
             highlightSelection();
@@ -654,8 +656,10 @@ import moment from 'moment';
             $('.rp-compare-end').removeClass('rp-compare-end');
             $('.rp-compare-oneday').removeClass('rp-compare-oneday');
 
-            setCompareInputs();
+            // show results
+            clearCompareRangeDisplay();
             highlightCompareSelection();
+            setCompareInputs();
         }
 
         /**
@@ -667,9 +671,9 @@ import moment from 'moment';
             status.compareIntervalEnd = moment(status.intervalEnd).subtract('year', 1).format('YYYY-MM-DD');
             status.compareIntervalStart = moment(status.intervalStart).subtract('year', 1).format('YYYY-MM-DD');
 
-            // reset
+            // show results
             clearCompareRangeDisplay();
-
+            highlightCompareSelection();
             setCompareInputs();
         }
 
@@ -707,7 +711,7 @@ import moment from 'moment';
             highlightCompareSelection();
             setCompareInputs();
         }
-        
+
 
         //////////////////// INITIATE //////////////////////
         createCalendarStructure();
@@ -727,6 +731,8 @@ import moment from 'moment';
         // TODO: switch the triangle up/down
         // TODO: change next/prev icons
         // TODO: add option to check compare in the start and
+        // TODO: check compare if compareInterval not empty on show
+        // TODO: options on the position of popup
 
         return self;
     };
