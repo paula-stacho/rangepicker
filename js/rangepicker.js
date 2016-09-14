@@ -80,7 +80,6 @@ import moment from 'moment';
             });
 
             makeForm();
-            prepareOutputs();
         }
 
         /**
@@ -141,6 +140,7 @@ import moment from 'moment';
                 showCompare.prop('checked', true);
                 compareRangeOptions.val(options.defaultCompareType);
             } else if (options.defaultCompareType) {
+                showCompare.prop('checked', true);
                 compareRangeOptions.val(options.defaultCompareType);
             }
             var compareDateRanges =
@@ -194,6 +194,7 @@ import moment from 'moment';
                 .append(outputTo);
 
             var compareStartFormatted, compareEndFormatted;
+            console.log('!!!', status.compareIntervalEnd);
             if (status.compareIntervalStart && status.compareIntervalEnd) {
                 compareStartFormatted = moment(status.compareIntervalStart).format('MMM D, YYYY');
                 compareEndFormatted = moment(status.compareIntervalEnd).format('MMM D, YYYY');
@@ -789,6 +790,7 @@ import moment from 'moment';
         addBindings();
         highlightInit();
         calculateCompare();
+        prepareOutputs();
 
         //////////////// TODO:
         // TODO: what if this is applied on multiple elements
