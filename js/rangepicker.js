@@ -20,6 +20,9 @@ import moment from 'moment';
             defaultCompareStart: null,
             defaultCompareEnd: null,
             defaultCompareType: 'custom',
+            futureEnabled: true,
+            maxDate: null,
+            minDate: null,
             onChange: function(){},
             onHide: function(){},
             onShow: function(){},
@@ -27,12 +30,15 @@ import moment from 'moment';
 
         }, options);
 
+        options.maxDateMoment = (options.maxDate) ? moment(new Date(options.maxDate)) : null;
+        options.minDateMoment = (options.minDate) ? moment(new Date(options.minDate)) : null;
+
         var status = {
             lastMonthDisplayed: moment(options.lastMonthDisplayed),
             lastSelected: '',
             lastSelectedCompare: '',
-            intervalStart: moment(options.defaultStart).format('YYYY-MM-DD') || null,
-            intervalEnd:  moment(options.defaultEnd).format('YYYY-MM-DD') || null,
+            intervalStart: moment(new Date(options.defaultStart)).format('YYYY-MM-DD') || null,
+            intervalEnd:  moment(new Date(options.defaultEnd)).format('YYYY-MM-DD') || null,
             compareIntervalStart:  moment(options.defaultCompareStart).format('YYYY-MM-DD') || null,
             compareIntervalEnd:  moment(options.defaultCompareEnd).format('YYYY-MM-DD') || null
         };
@@ -48,8 +54,8 @@ import moment from 'moment';
          */
         function createCalendarStructure() {
 
-            prev = $('<span class="rp-prev"> < </span>').addClass('rp-clickable');
-            next = $('<span class="rp-next"> > </span>').addClass('rp-clickable');
+            prev = $('<span class="rp-prev"> ◂ </span>').addClass('rp-clickable');
+            next = $('<span class="rp-next"> ▸ </span>').addClass('rp-clickable');
             months = $('<span class="rp-months"></span>');
             content = $('<div class="rp-content"></div>');
 
@@ -224,6 +230,7 @@ import moment from 'moment';
             var lastDay = moment(month + ' 01', 'YYYY MM DD').endOf('month');
             var monthNum = firstDay.format('MM');
             var date;
+            var todayMoment = moment();
 
             for (let i = 0; i < 6; i++) { // six weeks
                 let week = [];
@@ -240,7 +247,15 @@ import moment from 'moment';
                             date++;
                         }
                         let dateFormatted = firstDay.format('YYYY-MM') + '-' + ((date > 9) ? date : ('0' + date));
-                        week.push(`<td class="rp-day rp-month-${monthNum} rp-date-${date}" data-date="${dateFormatted}">${date}</td>`);
+                        let selectable = 'rp-selectable';
+                        let dateMoment = moment(dateFormatted, 'YYYY-MM-DD');
+
+                        if ((!options.futureEnabled && dateMoment.isAfter(todayMoment, 'day'))
+                            || (options.maxDateMoment && dateMoment.isAfter(options.maxDateMoment, 'day'))
+                            || (options.minDateMoment && dateMoment.isBefore(options.minDateMoment, 'day')) ){
+                            selectable = 'rp-not-selectable';
+                        }
+                        week.push(`<td class="rp-day rp-month-${monthNum} rp-date-${date} ${selectable}" data-date="${dateFormatted}">${date}</td>`);
                     }
                 }
 
@@ -662,27 +677,29 @@ import moment from 'moment';
          * @param event
          */
         function calculateInterval(event) {
-            clearRangeDisplay();
-            var dateClicked = event.target.dataset.date;
+            if ($(event.currentTarget).hasClass('rp-selectable')){
+                clearRangeDisplay();
+                var dateClicked = event.target.dataset.date;
 
-            if (!status.lastSelected || status.lastSelected === 'second'){ // selected first date
-                status.intervalStart = dateClicked;
-                status.intervalEnd = dateClicked;
-                status.lastSelected = 'first';
-                addFocus(dateTo.find('input'));
-            } else {
-                if (status.intervalStart < dateClicked){ // selected newer date as second
-                    status.intervalEnd = dateClicked;
-                } else { // selected older date as second
+                if (!status.lastSelected || status.lastSelected === 'second'){ // selected first date
                     status.intervalStart = dateClicked;
+                    status.intervalEnd = dateClicked;
+                    status.lastSelected = 'first';
+                    addFocus(dateTo.find('input'));
+                } else {
+                    if (status.intervalStart < dateClicked){ // selected newer date as second
+                        status.intervalEnd = dateClicked;
+                    } else { // selected older date as second
+                        status.intervalStart = dateClicked;
+                    }
+                    status.lastSelected = 'second';
+                    addFocus(dateFrom.find('input'));
                 }
-                status.lastSelected = 'second';
-                addFocus(dateFrom.find('input'));
-            }
 
-            highlightSelection();
-            calculateCompare();
-            setInputs();
+                highlightSelection();
+                calculateCompare();
+                setInputs();
+            }
         }
 
         /**
@@ -752,39 +769,40 @@ import moment from 'moment';
          * Custom compare calculate - requires user input
          */
         function calculateCompareCustom(type, event) {
-            clearCompareRangeDisplay();
-            if (type === 'input') { // input was changed
-                status.compareIntervalStart = moment( new Date(compareDateFrom.find('input').val() ) ).format('YYYY-MM-DD');
-                status.compareIntervalEnd = moment( new Date(compareDateTo.find('input').val() ) ).format('YYYY-MM-DD');
-            } else if (type === 'click') {
-                var dateClicked = event.target.dataset.date;
+            if (type === 'input' || $(event.currentTarget).hasClass('rp-selectable')) {
+                clearCompareRangeDisplay();
+                if (type === 'input') { // input was changed
+                    status.compareIntervalStart = moment( new Date(compareDateFrom.find('input').val() ) ).format('YYYY-MM-DD');
+                    status.compareIntervalEnd = moment( new Date(compareDateTo.find('input').val() ) ).format('YYYY-MM-DD');
+                } else if (type === 'click') {
+                    var dateClicked = event.target.dataset.date;
 
-                if (!status.lastSelectedCompare || status.lastSelectedCompare === 'second'){ // selected first date
-                    status.compareIntervalStart = dateClicked;
-                    status.compareIntervalEnd = dateClicked;
-                    status.lastSelectedCompare = 'first';
-                    $(event.target).addClass('rp-compare-oneday');
-                    addFocus(compareDateTo.find('input'));
-                } else {
-                    if (status.compareIntervalStart < dateClicked){ // selected newer date as second
-                        status.compareIntervalEnd = dateClicked;
-                        $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-start');
-                        $(event.target).addClass('rp-compare-end');
-                    } else { // selected older date as second
+                    if (!status.lastSelectedCompare || status.lastSelectedCompare === 'second'){ // selected first date
                         status.compareIntervalStart = dateClicked;
-                        $(`.rp-day[data-date="${status.compareIntervalEnd}"]`).addClass('rp-compare-end');
-                        $(event.target).addClass('rp-compare-start');
+                        status.compareIntervalEnd = dateClicked;
+                        status.lastSelectedCompare = 'first';
+                        $(event.target).addClass('rp-compare-oneday');
+                        addFocus(compareDateTo.find('input'));
+                    } else {
+                        if (status.compareIntervalStart < dateClicked){ // selected newer date as second
+                            status.compareIntervalEnd = dateClicked;
+                            $(`.rp-day[data-date="${status.compareIntervalStart}"]`).addClass('rp-compare-start');
+                            $(event.target).addClass('rp-compare-end');
+                        } else { // selected older date as second
+                            status.compareIntervalStart = dateClicked;
+                            $(`.rp-day[data-date="${status.compareIntervalEnd}"]`).addClass('rp-compare-end');
+                            $(event.target).addClass('rp-compare-start');
+                        }
+                        status.lastSelectedCompare = 'second';
+                        addFocus(compareDateFrom.find('input'));
                     }
-                    status.lastSelectedCompare = 'second';
-                    addFocus(compareDateFrom.find('input'));
+                    // TODO: but check that the ranges don't overlap
                 }
-                // TODO: but check that the ranges don't overlap
+
+                highlightCompareSelection();
+                setCompareInputs();
             }
-
-            highlightCompareSelection();
-            setCompareInputs();
         }
-
 
         //////////////////// INITIATE //////////////////////
         createCalendarStructure();
@@ -803,7 +821,6 @@ import moment from 'moment';
         // TODO: handle overlaps and bad inputs
         // TODO: change next/prev icons
         // TODO: options on the position of popup
-        // TODO: add restrict options
 
         return self;
     };

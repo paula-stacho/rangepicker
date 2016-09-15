@@ -33,7 +33,6 @@
   font-size: small;
   padding: 0.2em;
   text-align: center;
-  cursor: pointer;
 }
 .rp-content .rp-day.rp-interval-start,
 .rp-content .rp-day.rp-interval-end,
@@ -64,6 +63,12 @@
 }
 .rp-content .rp-day.rp-selected-compare {
   background-color: #b9ffc0;
+}
+.rp-content .rp-day.rp-selectable {
+  cursor: pointer;
+}
+.rp-content .rp-day.rp-not-selectable {
+  color: #bababa;
 }
 .rp-clickable {
   cursor: pointer;

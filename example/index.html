@@ -9,10 +9,14 @@
 		<script type="text/javascript" src="../build/rangepicker.js"></script>
 	</head>
 	<body>
-		<div type="text" id="datepicker"></div>
+		<div type="text" id="datepicker" style="float: right"></div>
 
 		<script>
-			$('#datepicker').rangepicker();
+			$('#datepicker').rangepicker({
+				defaultCompareType: 'mirror',
+				minDate: '2016-08-01',
+				maxDate: '2016-08-15'
+			});
 		</script>
 	</body>
 </html>
