@@ -702,8 +702,8 @@ import moment from 'moment';
                         calculateCompareCustom();
                         break;
                 }
-                compareDateFrom.show();
-                compareDateTo.show();
+                compareDateFrom.css('display','inline');
+                compareDateTo.css('display','inline');
             } else {
                 clearCompareRangeDisplay();
                 compareDateFrom.hide();
@@ -803,6 +803,7 @@ import moment from 'moment';
         // TODO: handle overlaps and bad inputs
         // TODO: change next/prev icons
         // TODO: options on the position of popup
+        // TODO: add restrict options
 
         return self;
     };
