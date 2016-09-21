@@ -117,11 +117,11 @@ import moment from 'moment';
                 </div>`);
             dateFrom =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini rp-input-interval focus" type="date" name="range-start" value="${startFormatted}">` +
+                    `<input class="rp-input-mini rp-input-interval focus" type="text" name="range-start" value="${startFormatted}">` +
                 '</div> - ');
             dateTo =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini rp-input-interval" type="date" name="range-end" value="${endFormatted}">` +
+                    `<input class="rp-input-mini rp-input-interval" type="text" name="range-end" value="${endFormatted}">` +
                 '</div>');
 
             ///// Compare date range
@@ -158,11 +158,11 @@ import moment from 'moment';
                 .append(compareRangeOptions);
             compareDateFrom =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini rp-input-compare" type="date" name="compare-range-start" value="${compareStartFormatted}">` +
+                    `<input class="rp-input-mini rp-input-compare" type="text" name="compare-range-start" value="${compareStartFormatted}">` +
                     '</div> - ');
             compareDateTo =
                 $('<div class="rp-date-input">' +
-                    `<input class="rp-input-mini rp-input-compare" type="date" name="compare-range-end" value="${compareEndFormatted}">` +
+                    `<input class="rp-input-mini rp-input-compare" type="text" name="compare-range-end" value="${compareEndFormatted}">` +
                     '</div>');
 
             controls = $('<div>');
