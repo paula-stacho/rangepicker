@@ -769,6 +769,10 @@ import moment from 'moment';
          * Custom compare calculate - requires user input
          */
         function calculateCompareCustom(type, event) {
+            if (compareRangeOptions.find('options:selected').val() !== 'custom'){
+                compareRangeOptions.val('custom');
+            }
+
             if (type === 'input' || $(event.currentTarget).hasClass('rp-selectable')) {
                 clearCompareRangeDisplay();
                 if (type === 'input') { // input was changed
