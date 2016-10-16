@@ -10,15 +10,12 @@ import moment from 'moment';
 
         options = $.extend({
 
-            datemin: '1995-01-01',
-            datemax: '2050-12-01',
-            mirror: true,
             months: 3,
-            lastMonthDisplayed: undefined,
+            lastMonthDisplayed: moment().format('YYYY-MM'),
             defaultStart: moment().subtract(6, 'days').format('YYYY-MM-DD'),
             defaultEnd: moment().format('YYYY-MM-DD'),
-            defaultCompareStart: null,
-            defaultCompareEnd: null,
+            defaultCompareStart: moment().subtract(13, 'days').format('YYYY-MM-DD'),
+            defaultCompareEnd: moment().subtract(7, 'days').format('YYYY-MM-DD'),
             defaultCompareType: 'custom',
             futureEnabled: true,
             maxDate: null,
@@ -32,9 +29,9 @@ import moment from 'moment';
 
         options.maxDateMoment = (options.maxDate) ? moment(new Date(options.maxDate)) : null;
         options.minDateMoment = (options.minDate) ? moment(new Date(options.minDate)) : null;
-
+        
         var status = {
-            lastMonthDisplayed: moment(options.lastMonthDisplayed),
+            lastMonthDisplayed: moment(options.lastMonthDisplayed, 'YYYY-MM'),
             lastSelected: '',
             lastSelectedCompare: '',
             intervalStart: moment(new Date(options.defaultStart)).format('YYYY-MM-DD') || null,
@@ -140,6 +137,7 @@ import moment from 'moment';
             compareRangeOptions = $(`<select id="rp-comparerange-preset" class="rp-comparerange-preset">
                 ${compareDateRangesOptions}
                 </select>`);
+
             if (status.compareIntervalStart && status.compareIntervalEnd) {
                 compareStartFormatted = moment(status.compareIntervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
                 compareEndFormatted = moment(status.compareIntervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
@@ -204,6 +202,7 @@ import moment from 'moment';
                 compareStartFormatted = moment(status.compareIntervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
                 compareEndFormatted = moment(status.compareIntervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
             }
+            
             outputCompareFrom = $(`<span class="rangepicker-compare-from">${compareStartFormatted}</span>`);
             outputCompareTo = $(`<span class="rangepicker-compare-to">${compareEndFormatted}</span>`);
             var outputsCompare = $('<div class="rangepicker-compare-interval"> - </div>');
@@ -773,7 +772,7 @@ import moment from 'moment';
                 compareRangeOptions.val('custom');
             }
 
-            if (type === 'input' || $(event.currentTarget).hasClass('rp-selectable')) {
+            if (type === 'input' || ( event && $(event.currentTarget).hasClass('rp-selectable') )) {
                 clearCompareRangeDisplay();
                 if (type === 'input') { // input was changed
                     status.compareIntervalStart = moment( new Date(compareDateFrom.find('input').val() ) ).format('YYYY-MM-DD');
