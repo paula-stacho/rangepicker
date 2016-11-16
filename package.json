@@ -3,6 +3,7 @@
   "version": "0.1.5",
   "description": "Date Range Comparison Picker",
   "main": "build/rangepicker.js",
+  "keywords": "range picker date compare comparison widget jquery",
   "directories": {
     "bin": "build",
     "example": "example"
