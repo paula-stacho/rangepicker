@@ -34,7 +34,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
         options.maxDateMoment = options.maxDate ? (0, _moment2.default)(new Date(options.maxDate)) : null;
         options.minDateMoment = options.minDate ? (0, _moment2.default)(new Date(options.minDate)) : null;
-        console.log('options', options);
+
         var status = {
             lastMonthDisplayed: (0, _moment2.default)(options.lastMonthDisplayed, 'YYYY-MM'),
             lastSelected: '',
@@ -151,7 +151,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
                 compareStartFormatted = (0, _moment2.default)(status.compareIntervalStart, 'YYYY-MM-DD').format('MMM D, YYYY');
                 compareEndFormatted = (0, _moment2.default)(status.compareIntervalEnd, 'YYYY-MM-DD').format('MMM D, YYYY');
             }
-            console.log('status?', status.compareIntervalEnd, status.compareIntervalStart, compareStartFormatted, compareEndFormatted);
+
             outputCompareFrom = $('<span class="rangepicker-compare-from">' + compareStartFormatted + '</span>');
             outputCompareTo = $('<span class="rangepicker-compare-to">' + compareEndFormatted + '</span>');
             var outputsCompare = $('<div class="rangepicker-compare-interval"> - </div>');
