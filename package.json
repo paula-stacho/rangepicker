@@ -8,6 +8,7 @@
     "bin": "build",
     "example": "example"
   },
+  "engines": {
     "node": "~6.11.0",
     "npm": "~5.3.0"
   },
