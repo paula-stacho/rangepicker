@@ -1,6 +1,6 @@
 {
   "name": "rangepicker",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Date Range Comparison Picker",
   "main": "build/rangepicker.js",
   "keywords": "range picker date compare comparison widget jquery",
