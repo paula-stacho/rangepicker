@@ -9,12 +9,13 @@
 		<script type="text/javascript" src="../build/rangepicker.js"></script>
 	</head>
 	<body>
-		<div id="datepicker" style="float: right"datemax: '2050-12-01'></div>
+		<div id="datepicker" style="float: right"></div>
 
 		<script>
 			$('#datepicker').rangepicker({
 				defaultCompareType: 'mirror',
-				maxDate: '2016-12-05'
+				maxDate: '2016-12-05',
+				useCompare: false
 			});
 		</script>
 	</body>

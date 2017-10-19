@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Admin Reporting Tool</title>
+		<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+
+		<link rel="stylesheet" type="text/css" href="../build/css/calendar.css">
+        <script src="https://code.jquery.com/jquery-3.1.0.slim.min.js" integrity="sha256-cRpWjoSOw5KcyIOaZNo4i6fZ9tKPhYYb6i5T9RSVJG8="   crossorigin="anonymous"></script>
+		<script type="text/javascript" src="../build/rangepicker.js"></script>
+	</head>
+	<body>
+		<div id="datepicker" style="float: right"></div>
+
+		<script>
+			$('#datepicker').rangepicker({
+				defaultStart: '2017-10-01',
+				defaultEnd: '2017-10-30',
+				useCompare: false,
+				onChange: function(newState) {
+					console.log(`You selected: ${newState.intervalStart} - ${newState.intervalEnd}`);
+				}
+			});
+		</script>
+	</body>
+</html>
