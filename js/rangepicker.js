@@ -288,8 +288,8 @@ import moment from 'moment';
             // join in table
             var table = $('<table class="rp-days-table"></table>');
             table.append($(weekHeaderRow));
-            for (let week of weeks) {
-                table.append($(week));
+            for (let i in weeks) {
+                table.append($(weeks[i]));
             }
 
             var monthContainer = $('<div class="rp-month"></div>');

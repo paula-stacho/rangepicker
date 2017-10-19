@@ -237,29 +237,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
             // join in table
             var table = $('<table class="rp-days-table"></table>');
             table.append($(weekHeaderRow));
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = weeks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var week = _step.value;
-
-                    table.append($(week));
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
+            for (var _i2 in weeks) {
+                table.append($(weeks[_i2]));
             }
 
             var monthContainer = $('<div class="rp-month"></div>');
