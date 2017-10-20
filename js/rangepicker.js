@@ -11,7 +11,7 @@ import moment from 'moment';
         options = $.extend({
 
             months: 3,
-            lastMonthDisplayed: moment().format('YYYY-MM'),
+            lastMonthDisplayed: null,
             defaultStart: moment().subtract(6, 'days').format('YYYY-MM-DD'),
             defaultEnd: moment().format('YYYY-MM-DD'),
             defaultCompareStart: moment().subtract(13, 'days').format('YYYY-MM-DD'),
@@ -25,12 +25,14 @@ import moment from 'moment';
             onHide: function(){},
             onShow: function(){},
             onMonthChange: function(){}
-
         }, options);
 
         options.maxDateMoment = (options.maxDate) ? moment(new Date(options.maxDate)) : null;
         options.minDateMoment = (options.minDate) ? moment(new Date(options.minDate)) : null;
 
+        if (!options.lastMonthDisplayed && options.defaultEnd) {
+            options.lastMonthDisplayed = moment(options.defaultEnd, 'YYYY-MM-DD').add(1, 'month').format('YYYY-MM');
+        }
         var status = {
             lastMonthDisplayed: moment(options.lastMonthDisplayed, 'YYYY-MM'),
             lastSelected: '',
