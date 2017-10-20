@@ -21,11 +21,12 @@
     "build:css": "npm run less && npm run autoprefixer",
     "build:all": "npm run build:css && npm run build:js",
     "browserify": "browserify js/rangepicker.js -o build/",
+    "uglify": "uglifyjs build/rangepicker.js -o build/rangepicker.js",
     "watch:css": "onchange \"css/\" -- npm run build:css",
     "watch:all": "npm-run-all -p serve watch:css watch:js",
     "watch:js": "watchify js/*.js -o build/rangepicker.js -dv",
     "watch": "npm run watch-css & npm run watch-js",
-    "build:js": "npm run lint && browserify js/*.js > build/rangepicker.js"
+    "build:js": "npm run lint && browserify js/*.js > build/rangepicker.js && npm run uglify"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.6",
